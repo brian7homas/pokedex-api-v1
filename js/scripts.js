@@ -51,21 +51,23 @@ this.negitiveRange = averageHeight - .2;  //0.625
     return pokemonList;
   }
   function add(item){
+    // Check for object type and if the object is empty
     if(typeof(item) == 'object' && item != undefined){
-      let itemKeys = Object.keys(item) // get itemKeys to define/validate what is being passed
-      let listKeys = Object.keys(pokemonList[0]) // get the original keys from the pokemonList array (1st object)
-      let addToList = true; // define a switch to display output from add function on line
-      itemKeys.forEach((key, i) => {
-        if(key != listKeys[i]){ // if key does not equal what is in the listKeys array
-          addToList = false;    // do not add to list
+      let itemKeys = Object.keys(item)                  // get itemKeys to define/validate what is being passed
+      let listKeys = Object.keys(pokemonList[0])        // get the original keys from the pokemonList array (1st object)
+      let addToList = true;                             // define a switch to display/add output to list
+      itemKeys.forEach((key, i) => {                    // iterate through the array of keys
+        if(key != listKeys[i]){                         // if key does not equal what is in the listKeys (original) array
+          addToList = false;                            // do not add to list
           document.write(`'keys need to match [${listKeys}] <br>`);
           throw new Error(`'keys need to match [${listKeys}] <br>`)
         }
       });
-      if(addToList){
-        pokemonList.push(item);  
+      if(addToList){                                    // if addToList is not set to false on line 61
+        pokemonList.push(item);                         // add (push) item to the list
       }
       
+    //! if the item is an empty object or not an object at all
     }else if(item == undefined ){
       document.write('Make sure your passing an object and that it is not empty <br>')
       document.write('Also make sure your passing [name: string, height: int, type: object]')
@@ -94,11 +96,6 @@ this.negitiveRange = averageHeight - .2;  //0.625
     filterByName: filterByName
   }
 })();
-
-console.log(pokemonRepository.add({name:'Takka', height: 1, types:{}}));
-console.log(pokemonRepository.getAll());
-console.log(pokemonRepository.filterByName('Charmandoer'));
-
 //? SORT THROUGH ARRAY BASED ON HEIGHT
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
@@ -111,3 +108,7 @@ pokemonRepository.getAll().forEach(element => {
     document.write(`${element.name} is closest to the set average height. <br>`)
   }
 });
+
+console.log(pokemonRepository.add({name:'Takka', height: 1, types:{}}));
+console.log(pokemonRepository.getAll());
+console.log(pokemonRepository.filterByName('Charmandoer'));
