@@ -56,18 +56,12 @@ let positiveRange = .2 + averageHeight //1.025
 //set a range of .2 BELOW the average height
 let negitiveRange = averageHeight - .2  //0.625
 
-//iterate through the array using itemCount
-for(let i = 0; i < itemCount; i++){
-  //if object's height value is LESS THAN the set negitive range
-  if(pokemonList[i].height < negitiveRange){
-    document.write(`${pokemonList[i].name} is below the set average height.<br>`);
+pokemonList.forEach(element => {
+  if(element.height < negitiveRange){
+    document.write(`${element.name} is below the set average height. <br>`)
+  }else if(element.height > positiveRange){
+    document.write(`${element.name} is well above the set average height. <br>`)
+  }else{
+    document.write(`${element.name} is closest to the set average height. <br>`)
   }
-  //if object's height value is GREATER than the set positive range
-  else if(pokemonList[i].height > positiveRange ){
-    document.write(`${pokemonList[i].name} is well above the set average height.<br>`);
-  }
-  //if object's height value is within .2 of the averageHeight
-  else{
-    document.write(`${pokemonList[i].name}  is the closest to average height.<br>`) //?
-  }
-}
+});
