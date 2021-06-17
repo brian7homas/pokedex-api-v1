@@ -32,19 +32,34 @@ let pokemonRepository = (function(){
         'poison'
       ]
     },
+    {
+      name: 'Ivysaur',
+      height: 1,
+      types: [
+        'grass',
+        'poison'
+      ]
+    },
+    {
+      name: 'Arbok',
+      height: 3.5,
+      types: [
+        'poison'
+      ]
+    },
   ];
   
 //add all height values
-let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); //3.3
+let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); 
 //get number of object inside the array
-let itemCount = pokemonList.length; //4 
+let itemCount = pokemonList.length; 
 
 //calculate the average height 
-let averageHeight = totalHeight/itemCount; //0.825
+let averageHeight = totalHeight/itemCount; //?
 
 // variable using this to be accessible in global context
-this.positiveRange = .2 + averageHeight; //1.025
-this.negitiveRange = averageHeight - .2;  //0.625
+this.positiveRange = .2 + averageHeight;
+this.negitiveRange = averageHeight - .2;
 
 
   function getAll(){
@@ -64,7 +79,9 @@ this.negitiveRange = averageHeight - .2;  //0.625
         }
       });
       if(addToList){                                    // if addToList is not set to false on line 61
+        item
         pokemonList.push(item);                         // add (push) item to the list
+        pokemonList
       }
       
     //! if the item is an empty object or not an object at all
@@ -96,6 +113,10 @@ this.negitiveRange = averageHeight - .2;  //0.625
     filterByName: filterByName
   }
 })();
+
+console.log(pokemonRepository.add({name:'Clefairy', height: .6, types:['fairy']}));
+
+
 //? SORT THROUGH ARRAY BASED ON HEIGHT
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
@@ -109,6 +130,5 @@ pokemonRepository.getAll().forEach(element => {
   }
 });
 
-console.log(pokemonRepository.add({name:'Takka', height: 1, types:{}}));
-console.log(pokemonRepository.getAll());
 console.log(pokemonRepository.filterByName('Charmandoer'));
+console.log(pokemonRepository.getAll());
