@@ -51,17 +51,55 @@ this.negitiveRange = averageHeight - .2;  //0.625
     return pokemonList;
   }
   function add(item){
-    return pokemonList.push(item)
+    if(typeof(item) == 'object' && item != undefined){
+      let itemKeys = Object.keys(item) // get itemKeys to define/validate what is being passed
+      let listKeys = Object.keys(pokemonList[0]) // get the original keys from the pokemonList array (1st object)
+      let addToList = true; // define a switch to display output from add function on line
+      itemKeys.forEach((key, i) => {
+        if(key != listKeys[i]){ // if key does not equal what is in the listKeys array
+          addToList = false;    // do not add to list
+          document.write(`'keys need to match [${listKeys}] <br>`);
+          throw new Error(`'keys need to match [${listKeys}] <br>`)
+        }
+      });
+      if(addToList){
+        pokemonList.push(item);  
+      }
+      
+    }else if(item == undefined ){
+      document.write('Make sure your passing an object and that it is not empty <br>')
+      document.write('Also make sure your passing [name: string, height: int, type: object]')
+      throw new Error('This add function only takes objects.<br>')
+    }
+  }
+  function filterByName(name){
+    // store the filtered array in filtered variable
+    let filtered = pokemonList.filter(pokemon => {
+      if(pokemon.name == name){
+        pokemon.name 
+        name 
+        return true;
+      }
+    })
+    // if there is a match, the filtered array will store it in the 1st position
+    if(filtered[0]){
+      document.write(`You selected ${filtered[0].name} <br>` )
+    }else{
+      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
+    }
   }
   return{
     add: add,
-    getAll: getAll
+    getAll: getAll,
+    filterByName: filterByName
   }
 })();
 
-console.log(pokemonRepository.add({name: 'Takka', height: 1.82}));
+console.log(pokemonRepository.add({name:'Takka', height: 1, types:{}}));
 console.log(pokemonRepository.getAll());
+console.log(pokemonRepository.filterByName('Charmandoer'));
 
+//? SORT THROUGH ARRAY BASED ON HEIGHT
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
 pokemonRepository.getAll().forEach(element => {
