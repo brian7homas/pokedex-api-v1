@@ -1,73 +1,134 @@
-//data
-let pokemonList = [
-  {
-    name: 'Charmandoer',
-    height: 0.6,
-    types: [
-      'fire',
-      'speed'
-    ]
-  },
-  {
-    name: 'Pidgey',
-    height: 0.3,
-    types: [
-      'flying',
-      'normal'
-    ]
-  },
-  {
-    name: 'Nidoking',
-    height: 1.4,
-    types: [
-      'ground',
-      'poison'
-    ]
-  },
-  {
-    name: 'Weepinbell',
-    height: 1,
-    types: [
-      'grass',
-      'poison'
-    ]
-  },
-];
-
-
-//define variables in the global scope 
-
-/*
-  reduce adds the current height(curr.height)
-  to the accelorator (acc)
-*/
-
+let pokemonRepository = (function(){
+  let pokemonList = [
+    {
+      name: 'Charmandoer',
+      height: 0.6,
+      types: [
+        'fire',
+        'speed'
+      ]
+    },
+    {
+      name: 'Pidgey',
+      height: 0.3,
+      types: [
+        'flying',
+        'normal'
+      ]
+    },
+    {
+      name: 'Nidoking',
+      height: 1.4,
+      types: [
+        'ground',
+        'poison'
+      ]
+    },
+    {
+      name: 'Weepinbell',
+      height: 1,
+      types: [
+        'grass',
+        'poison'
+      ]
+    },
+    {
+      name: 'Ivysaur',
+      height: 1,
+      types: [
+        'grass',
+        'poison'
+      ]
+    },
+    {
+      name: 'Arbok',
+      height: 3.5,
+      types: [
+        'poison'
+      ]
+    },
+  ];
+  
 //add all height values
-let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); //3.3
+let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); 
 //get number of object inside the array
-let itemCount = pokemonList.length; //4 
+let itemCount = pokemonList.length; 
 
 //calculate the average height 
-let averageHeight = totalHeight/itemCount; //0.825
+let averageHeight = totalHeight/itemCount; //?
 
-//set a range of .2 ABOVE the average height
-let positiveRange = .2 + averageHeight //1.025
+// variable using this to be accessible in global context
+this.positiveRange = .2 + averageHeight;
+this.negitiveRange = averageHeight - .2;
 
-//set a range of .2 BELOW the average height
-let negitiveRange = averageHeight - .2  //0.625
 
-//iterate through the array using itemCount
-for(let i = 0; i < itemCount; i++){
-  //if object's height value is LESS THAN the set negitive range
-  if(pokemonList[i].height < negitiveRange){
-    document.write(`${pokemonList[i].name} is below the set average height.<br>`);
+  function getAll(){
+    return pokemonList;
   }
-  //if object's height value is GREATER than the set positive range
-  else if(pokemonList[i].height > positiveRange ){
-    document.write(`${pokemonList[i].name} is well above the set average height.<br>`);
+  function add(item){
+    // Check for object type and if the object is empty
+    if(typeof(item) == 'object' && item != undefined){
+      let itemKeys = Object.keys(item)                  // get itemKeys to define/validate what is being passed
+      let listKeys = Object.keys(pokemonList[0])        // get the original keys from the pokemonList array (1st object)
+      let addToList = true;                             // define a switch to display/add output to list
+      itemKeys.forEach((key, i) => {                    // iterate through the array of keys
+        if(key != listKeys[i]){                         // if key does not equal what is in the listKeys (original) array
+          addToList = false;                            // do not add to list
+          document.write(`'keys need to match [${listKeys}] <br>`);
+          throw new Error(`'keys need to match [${listKeys}] <br>`)
+        }
+      });
+      if(addToList){                                    // if addToList is not set to false on line 61
+        item
+        pokemonList.push(item);                         // add (push) item to the list
+        pokemonList
+      }
+      
+    //! if the item is an empty object or not an object at all
+    }else if(item == undefined ){
+      document.write('Make sure your passing an object and that it is not empty <br>')
+      document.write('Also make sure your passing [name: string, height: int, type: object]')
+      throw new Error('This add function only takes objects.<br>')
+    }
   }
-  //if object's height value is within .2 of the averageHeight
-  else{
-    document.write(`${pokemonList[i].name}  is the closest to average height.<br>`) //?
+  function filterByName(name){
+    // store the filtered array in filtered variable
+    let filtered = pokemonList.filter(pokemon => {
+      if(pokemon.name == name){
+        pokemon.name 
+        name 
+        return true;
+      }
+    })
+    // if there is a match, the filtered array will store it in the 1st position
+    if(filtered[0]){
+      document.write(`You selected ${filtered[0].name} <br>` )
+    }else{
+      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
+    }
   }
-}
+  return{
+    add: add,
+    getAll: getAll,
+    filterByName: filterByName
+  }
+})();
+
+console.log(pokemonRepository.add({name:'Clefairy', height: .6, types:['fairy']}));
+
+
+//? SORT THROUGH ARRAY BASED ON HEIGHT
+// pokemonList is removed from global context
+// pokemonRepository.getAll() is how it can be accessed
+pokemonRepository.getAll().forEach(element => {
+  if(element.height < negitiveRange){
+    document.write(`${element.name} is below the set average height. <br>`)
+  }else if(element.height > positiveRange){
+    document.write(`${element.name} is well above the set average height. <br>`)
+  }else{
+    document.write(`${element.name} is closest to the set average height. <br>`)
+  }
+});
+
+console.log(pokemonRepository.filterByName('Charmandoer'));
+console.log(pokemonRepository.getAll());
