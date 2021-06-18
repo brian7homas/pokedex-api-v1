@@ -58,8 +58,8 @@ let itemCount = pokemonList.length;
 let averageHeight = totalHeight/itemCount; //?
 
 // variable using this to be accessible in global context
-this.positiveRange = .2 + averageHeight;
-this.negitiveRange = averageHeight - .2;
+let positiveRange = .2 + averageHeight;
+let negitiveRange = averageHeight - .2;
 
 
   function getAll(){
@@ -110,7 +110,9 @@ this.negitiveRange = averageHeight - .2;
   return{
     add: add,
     getAll: getAll,
-    filterByName: filterByName
+    filterByName: filterByName,
+    positiveRange: positiveRange,
+    negitiveRange: negitiveRange
   }
 })();
 
@@ -121,9 +123,9 @@ console.log(pokemonRepository.add({name:'Clefairy', height: .6, types:['fairy']}
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
 pokemonRepository.getAll().forEach(element => {
-  if(element.height < negitiveRange){
+  if(element.height < pokemonRepository.positiveRange){
     document.write(`${element.name} is below the set average height. <br>`)
-  }else if(element.height > positiveRange){
+  }else if(element.height > pokemonRepository.positiveRange){
     document.write(`${element.name} is well above the set average height. <br>`)
   }else{
     document.write(`${element.name} is closest to the set average height. <br>`)
