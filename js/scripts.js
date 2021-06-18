@@ -19,11 +19,21 @@ let positiveRange = .2 + averageHeight;
 let negitiveRange = averageHeight - .2;
 
   function load(){
-    return fetch('https://pokeapi.co/api/v2/pokemon/?limit=15').then(function(res){
-      let json = res.json();
-      console.log(json)
-      return add(json);
+    return fetch('https://pokeapi.co/api/v2/pokemon/').then(function(res){
+      return res.json();
+    }).then(function (json){
+      json.results.forEach(function (item){
+        let pokemon = {
+          name: item.name,
+          url: item.url
+        }
+        add(pokemon)
+        loadDetails(pokemon.url)
+      })
     })
+  }
+  function loadDetails(pokemon){
+    return pokemon.url;
   }
   function getAll(){
     return pokemonList;
@@ -42,9 +52,8 @@ let negitiveRange = averageHeight - .2;
         }
       });
       if(addToList){
-        item
         pokemonList.push(item);
-        pokemonList
+        addListItem(item)
       }
       
     //! if the item is an empty object or not an object at all
@@ -95,14 +104,14 @@ let negitiveRange = averageHeight - .2;
     let pokemonListNode = document.querySelector('.pokemon-list');
     let listItem = document.createElement('li');
     let button = document.createElement('button');
-    
-    if(pokemon.height < pokemonRepository.positiveRange){
-      button.innerText = `${pokemon.name} is below the set average height.`;
-    }else if(pokemon.height > pokemonRepository.positiveRange){
-      button.innerText = `${pokemon.name} is well above the set average height.`;
-    }else{
-      button.innerText = `${pokemon.name} is closest to the set average height.`;
-    }
+    button.innerText = `${pokemon.name} is a new pokemon`;
+    // if(pokemon.height < pokemonRepository.positiveRange){
+    //   button.innerText = `${pokemon.name} is below the set average height.`;
+    // }else if(pokemon.height > pokemonRepository.positiveRange){
+    //   button.innerText = `${pokemon.name} is well above the set average height.`;
+    // }else{
+    //   button.innerText = `${pokemon.name} is closest to the set average height.`;
+    // }
     button.classList.add('btn')
     listItem.append(button)
     pokemonListNode.append(listItem)
@@ -127,20 +136,22 @@ let negitiveRange = averageHeight - .2;
     negitiveRange: negitiveRange
   }
 })();
-console.log(pokemonRepository.load())
+pokemonRepository.add({name:'', url:''})
+pokemonRepository.load()
 //add new pokemon
-// pokemonRepository.add({name:'Clefairy', height: 1.5, types:['fairy']})
+
 
 
 //? SORT THROUGH ARRAY BASED ON HEIGHT
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
-pokemonRepository.getAll().forEach(element => {
-  pokemonRepository.addListItem(element)
-});
+// pokemonRepository.getAll().forEach(element => {
+//   console.log(element)
+//   pokemonRepository.addListItem(element)
+// });
 
 //filter pokemon from the pokemon list
-pokemonRepository.filterByName('Charmandoer')
+// pokemonRepository.filterByName('bulbasaur')
 
 //display the entire list of pokemon
-//console.log(pokemonRepository.getAll());
+// console.log(pokemonRepository.getAll());
