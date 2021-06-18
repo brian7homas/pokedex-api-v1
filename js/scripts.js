@@ -107,40 +107,41 @@ let negitiveRange = averageHeight - .2;
       document.write(`Sorry there is no pokemon by that name in my list. <br>` )
     }
   }
+  function addListItem(pokemon){  
+    //select/create nodes to be used
+    let pokemonListNode = document.querySelector('.pokemon-list');
+    let listItem = document.createElement('li');
+    let button = document.createElement('button');
+    
+    if(pokemon.height < pokemonRepository.positiveRange){
+      button.innerText = `${pokemon.name} is below the set average height.`;
+    }else if(pokemon.height > pokemonRepository.positiveRange){
+      button.innerText = `${pokemon.name} is well above the set average height.`;
+    }else{
+      button.innerText = `${pokemon.name} is closest to the set average height.`;
+    }
+    button.classList.add('btn')
+    listItem.append(button)
+    pokemonListNode.append(listItem)
+  }
   return{
     add: add,
     getAll: getAll,
     filterByName: filterByName,
+    addListItem: addListItem,
     positiveRange: positiveRange,
     negitiveRange: negitiveRange
   }
 })();
 
-console.log(pokemonRepository.add({name:'Clefairy', height: .6, types:['fairy']}));
+console.log(pokemonRepository.add({name:'Clefairy', height: 1.5, types:['fairy']}));
 
 
 //? SORT THROUGH ARRAY BASED ON HEIGHT
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
 pokemonRepository.getAll().forEach(element => {
-  let pokemonListNode = document.querySelector('.pokemon-list');
-  let listItem = document.createElement('li');
-  let button = document.createElement('button');
-  button.innerText = `${element.name} is below the set average height.`;
-  button.classList.add('btn')
-  listItem.append(button)
-  pokemonListNode.append(listItem)
-  console.log(button)
-  // if(element.height < pokemonRepository.positiveRange){
-  //   let listItem = document.createElement('li');
-  //   let button = document.createElement('button');
-  //   button.innerText(`${element.name} is below the set average height. <br>`);
-  //   // document.write(`${element.name} is below the set average height. <br>`)
-  // }else if(element.height > pokemonRepository.positiveRange){
-  //   document.write(`${element.name} is well above the set average height. <br>`)
-  // }else{
-  //   document.write(`${element.name} is closest to the set average height. <br>`)
-  // }
+  pokemonRepository.addListItem(element)
 });
 
 console.log(pokemonRepository.filterByName('Charmandoer'));
