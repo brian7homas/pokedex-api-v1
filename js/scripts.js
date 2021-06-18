@@ -123,13 +123,24 @@ console.log(pokemonRepository.add({name:'Clefairy', height: .6, types:['fairy']}
 // pokemonList is removed from global context
 // pokemonRepository.getAll() is how it can be accessed
 pokemonRepository.getAll().forEach(element => {
-  if(element.height < pokemonRepository.positiveRange){
-    document.write(`${element.name} is below the set average height. <br>`)
-  }else if(element.height > pokemonRepository.positiveRange){
-    document.write(`${element.name} is well above the set average height. <br>`)
-  }else{
-    document.write(`${element.name} is closest to the set average height. <br>`)
-  }
+  let pokemonListNode = document.querySelector('.pokemon-list');
+  let listItem = document.createElement('li');
+  let button = document.createElement('button');
+  button.innerText = `${element.name} is below the set average height.`;
+  button.classList.add('btn')
+  listItem.append(button)
+  pokemonListNode.append(listItem)
+  console.log(button)
+  // if(element.height < pokemonRepository.positiveRange){
+  //   let listItem = document.createElement('li');
+  //   let button = document.createElement('button');
+  //   button.innerText(`${element.name} is below the set average height. <br>`);
+  //   // document.write(`${element.name} is below the set average height. <br>`)
+  // }else if(element.height > pokemonRepository.positiveRange){
+  //   document.write(`${element.name} is well above the set average height. <br>`)
+  // }else{
+  //   document.write(`${element.name} is closest to the set average height. <br>`)
+  // }
 });
 
 console.log(pokemonRepository.filterByName('Charmandoer'));
