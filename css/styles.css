@@ -1,0 +1,59 @@
+body{
+  background-color: hsl(120, 100%, 25%);
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+  font-size: 1.2rem;
+  display:grid;
+  grid-template-columns: 1.5fr .5fr;
+  padding:2em;
+}
+.pokemon-list{
+  max-width: 50vw;
+}
+.pokemon-list li{
+  list-style: none;
+  margin: .7em auto;
+}
+.btn{
+  padding:.5em;
+  text-align: left;
+  background-color: hsl(120, 100%, 17%);
+  color: hsl(0, 0%, 100%);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all .2s ease-out;
+  -webkit-transition: all .2s ease-out;
+  -moz-transition: all .2s ease-out;
+  -ms-transition: all .2s ease-out;
+  -o-transition: all .2s ease-out;
+}
+.btn:hover{
+  color: hsl(0, 0%, 50%);
+}
+.btn--filtered{
+  padding:.5em;
+  text-align: left;
+  background-color: hsl(120, 100%, 37%);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all .2s ease-out;
+  -webkit-transition: all .2s ease-out;
+  -moz-transition: all .2s ease-out;
+  -ms-transition: all .2s ease-out;
+  -o-transition: all .2s ease-out;
+}
+.btn--filtered:hover{
+  background-color: hsl(120, 100%, 17%);
+  color: hsl(0, 0%, 100%);
+}
+.filtered-list{
+  
+}
+.filtered-item{
+  list-style: none;
+  
+}
+.filtered-pokemon{
+  
+}
