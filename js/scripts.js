@@ -1,145 +1,177 @@
+
 let pokemonRepository = (function(){
   let pokemonList = [
     {
-      name: 'Charmandoer',
-      height: 0.6,
-      types: [
-        'fire',
-        'speed'
-      ]
-    },
-    {
-      name: 'Pidgey',
-      height: 0.3,
-      types: [
-        'flying',
-        'normal'
-      ]
-    },
-    {
-      name: 'Nidoking',
-      height: 1.4,
-      types: [
-        'ground',
-        'poison'
-      ]
-    },
-    {
-      name: 'Weepinbell',
-      height: 1,
-      types: [
-        'grass',
-        'poison'
-      ]
-    },
-    {
-      name: 'Ivysaur',
-      height: 1,
-      types: [
-        'grass',
-        'poison'
-      ]
-    },
-    {
-      name: 'Arbok',
-      height: 3.5,
-      types: [
-        'poison'
-      ]
-    },
+      name: '',
+      url: ''
+    }
   ];
   
-//add all height values
-let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); 
-//get number of object inside the array
-let itemCount = pokemonList.length; 
-
-//calculate the average height 
-let averageHeight = totalHeight/itemCount; //?
-
-//removed this
-let positiveRange = .2 + averageHeight;
-let negitiveRange = averageHeight - .2;
-
-
+  // THESE ARE NOT BEING USED JUST YET
+  // let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); 
+  // //get number of object inside the array
+  // let itemCount = pokemonList.length; 
+  // //calculate the average height 
+  // let averageHeight = totalHeight/itemCount;
+  // //removed this
+  // let positiveRange = 2 + averageHeight;
+  // let negitiveRange = averageHeight - 2;
+  
+  
+  const URL = 'https://pokeapi.co/api/v2/pokemon/';
+  //1
+  function load(){
+    showLoadingMessage('.pokemon-list')
+    fetch(URL).then(function(res){
+      hideLoadingMessage()
+      return res.json();
+    })
+    .then(function (json){  
+      json.results.forEach(function (item){
+        
+        let pokemon = {
+          name: item.name,
+          url: item.url
+        }
+        add(pokemon);  
+      })
+    })
+    .catch(function(error){
+        hideLoadingMessage()
+        console.log(error)
+    })
+  }
+  function loadDetails(pokemon){
+    showLoadingMessage('.filtered-list')
+    fetch(pokemon).then(function(res){
+      hideLoadingMessage('.filtered-list')
+      return res.json();
+    })
+    .then(function (json){  
+      let details = {
+        height: json.height,
+        imgUrl: json.sprites.front_default
+      }
+      console.log(details)
+      addListItem('', details)
+      getAll()
+      // extractDetails(details)
+    })
+    .catch(function(error){
+      hideLoadingMessage()
+      console.log(error)
+    })
+  }
   function getAll(){
     return pokemonList;
   }
+  //2
   function add(item){
     // Check for object type and if the object is empty
     if(typeof(item) == 'object' && item != undefined){
-      let itemKeys = Object.keys(item)                  // get itemKeys to define/validate what is being passed
-      let listKeys = Object.keys(pokemonList[0])        // get the original keys from the pokemonList array (1st object)
-      let addToList = true;                             // define a switch to display/add output to list
-      itemKeys.forEach((key, i) => {                    // iterate through the array of keys
-        if(key != listKeys[i]){                         // if key does not equal what is in the listKeys (original) array
-          addToList = false;                            // do not add to list
+      let itemKeys = Object.keys(item)
+      // add pattern for name and url keys here
+      let listKeys = Object.keys(pokemonList[0])
+      let addToList = true;
+      itemKeys.forEach((key, i) => {
+        if(key != listKeys[i]){
+          addToList = false;
           document.write(`'keys need to match [${listKeys}] <br>`);
           throw new Error(`'keys need to match [${listKeys}] <br>`)
         }
       });
-      if(addToList){                                    // if addToList is not set to false on line 61
-        item
-        pokemonList.push(item);                         // add (push) item to the list
-        pokemonList
-      }
-      
-    //! if the item is an empty object or not an object at all
+      if(addToList){
+        pokemonList.push(item);
+        addListItem(item, '');
+        return pokemonList;
+      }  
+      //! if the item is an empty object or not an object at all
     }else if(item == undefined ){
       document.write('Make sure your passing an object and that it is not empty <br>')
       document.write('Also make sure your passing [name: string, height: int, type: object]')
       throw new Error('This add function only takes objects.<br>')
     }
   }
+  function buildSelectedField(filteredName){
+    let filteredListItem = document.createElement('li');
+    let button = document.createElement('button');
+    let pokemonListNode = document.querySelector('.pokemon-list');
+    let filteredList = document.createElement('ul');
+    pokemonListNode.insertAdjacentElement('afterend', filteredList)
+    filteredList.classList.add('filtered-list')
+    filteredListItem.classList.add('filtered-item')
+    button.classList.add('btn--filtered')
+    filteredListItem.append(button)
+    filteredList.append(filteredListItem)
+    button.innerText = `You Selected ${filteredName}`;
+  }
   function filterByName(name){
-    // store the filtered array in filtered variable
-    let filtered = pokemonList.filter(pokemon => {
+    buildSelectedField()
+    showLoadingMessage('.filtered-list')
+    setTimeout(()=>{
+      // store the filtered array in filtered variable
+      let filtered = pokemonList.filter(pokemon => {
       if(pokemon.name == name){
         return true;
       }
     })
     // if there is a match, the filtered array will store it in the 1st position
     if(filtered[0]){
-      //select node to be used
-      let filteredListItem = document.createElement('li');
-      let button = document.createElement('button');
-      let pokemonListNode = document.querySelector('.pokemon-list');
-      let filteredList = document.createElement('ul');
+      buildSelectedField()
+      let button = document.querySelector('.btn--filtered');
+      filterLoadingMessage();
       
-      // insert new list item alongside the pokemonListNode
-      pokemonListNode.insertAdjacentElement('afterend', filteredList)
-      
-      // add classes
-      filteredList.classList.add('filtered-list')
-      filteredListItem.classList.add('filtered-item')
-      button.classList.add('btn--filtered')
-      
-      // append
-      filteredListItem.append(button)
-      filteredList.append(filteredListItem)
-      
+      buildSelectedField(filtered[0].name)
       //insert text
-      button.innerText = `You Selected ${filtered[0].name}`;
       
       //add event
       events(button, filtered[0])
     }else{
       document.write(`Sorry there is no pokemon by that name in my list. <br>` )
     }
+    }, 2200)
+    
+  
   }
-  function addListItem(pokemon){  
+  function showLoadingMessage(selector){
+    let loader = `<div class="loading">Loading</div>`;
+    return document.querySelector(!selector ? 'body' : selector).innerHTML = loader;
+  }
+  function hideLoadingMessage(selector){
+    document.querySelector(!selector ? '.loading' : selector).innerHTML = '';
+  }
+  function filterLoadingMessage(){
+    let filterLoading = document.querySelector('.filtered-list > .loading');
+    filterLoading.remove();
+  }
+  // THIS FUNCTION ADDS BUTTONS WHEN CLICKING ON POKEMON
+  // POKEMON OBJECT COMES FROM LOAD() AND DETAILS COMES FROM LOADDETAILS()
+  //3
+  function addListItem(pokemon = null, details = null){
+    let totalHeight = pokemonList.reduce((acc, curr)=> curr.height + acc, 0); 
+    //get number of object inside the array
+    let itemCount = pokemonList.length; 
+    //calculate the average height 
+    let averageHeight = totalHeight/itemCount;
+    //removed this
+    let positiveRange = 2 + averageHeight;
+    let negitiveRange = averageHeight - 2;
+    
     //select/create nodes to be used
     let pokemonListNode = document.querySelector('.pokemon-list');
     let listItem = document.createElement('li');
     let button = document.createElement('button');
     
-    if(pokemon.height < pokemonRepository.positiveRange){
+    
+    if(details.height < negitiveRange){
       button.innerText = `${pokemon.name} is below the set average height.`;
-    }else if(pokemon.height > pokemonRepository.positiveRange){
+    }else if(details.height > positiveRange){
       button.innerText = `${pokemon.name} is well above the set average height.`;
     }else{
-      button.innerText = `${pokemon.name} is closest to the set average height.`;
+      button.innerText = `${pokemon.name} height will be calculated soon`;
     }
+    
+    
     button.classList.add('btn')
     listItem.append(button)
     pokemonListNode.append(listItem)
@@ -147,11 +179,13 @@ let negitiveRange = averageHeight - .2;
     events(button, pokemon);
   }
   function showDetails(pokemon){
-    console.log(pokemon)
+    return loadDetails(pokemon)
+    // console.log(pokemon)
   }
+  //4
   function events(button, pokemon){
     button.addEventListener("click", ()=>{
-      return showDetails(pokemon);
+      return showDetails(pokemon.url);
     })
   }
   return{
@@ -159,24 +193,16 @@ let negitiveRange = averageHeight - .2;
     getAll: getAll,
     filterByName: filterByName,
     addListItem: addListItem,
-    positiveRange: positiveRange,
-    negitiveRange: negitiveRange
+    load:load,
+    loadDetails: loadDetails,
+    showLoadingMessage : showLoadingMessage,
+    URL : URL
   }
 })();
-
-//add new pokemon
-pokemonRepository.add({name:'Clefairy', height: 1.5, types:['fairy']})
-
-
-//? SORT THROUGH ARRAY BASED ON HEIGHT
-// pokemonList is removed from global context
-// pokemonRepository.getAll() is how it can be accessed
-pokemonRepository.getAll().forEach(element => {
-  pokemonRepository.addListItem(element)
-});
+pokemonRepository.load()
 
 //filter pokemon from the pokemon list
-pokemonRepository.filterByName('Charmandoer')
+pokemonRepository.filterByName('bulbasaur')
 
 //display the entire list of pokemon
-//console.log(pokemonRepository.getAll());
+// console.log(pokemonRepository.getAll());
