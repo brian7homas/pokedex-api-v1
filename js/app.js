@@ -101,7 +101,7 @@ let repository = (function(){
     }
   }
   function filterByName(name){
-    // showLoadingMessage('.filtered-list')
+    showLoadingMessage('.btn--filtered')
     setTimeout(()=>{
       // store the filtered array in filtered variable
       let filtered = list.filter(pokemon => {
@@ -111,14 +111,9 @@ let repository = (function(){
     })
     // if there is a match, the filtered array will store it in the 1st position
     if(filtered[0]){
-      console.log(filtered[0])
+      hideLoadingMessage();
       let button = document.querySelector('.btn--filtered');
-      // filterLoadingMessage();
-      
-      // buildSelectedField(filtered[0].name)
-      //insert text
       button.innerText = `You selected ${name}`
-      //add event
       events(button, filtered[0])
     }else{
       document.write(`Sorry there is no pokemon by that name in my list. <br>` )
