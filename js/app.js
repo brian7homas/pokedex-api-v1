@@ -17,6 +17,7 @@ let repository = (function(){
     root.appendChild(div);
     //give the div class of container
     div.classList.add('container');
+    showLoadingMessage('.container')
     //attacth the ul to the div
     div.appendChild(ul)
     
@@ -27,7 +28,7 @@ let repository = (function(){
     //attatch the li to the ul
     filteredList.append(filteredListItem)
     //attatch the button to the filtered list item
-    filteredListItem.append(button)
+    filteredListItem.append(btn)
     
     
     //attach the li to the ul
@@ -38,14 +39,17 @@ let repository = (function(){
     
     ul.classList.add('pokemon-list')
     li.classList.add('pokemon-list__item')
+    button.classList.add('btn')
+    
     filteredList.classList.add('filtered-list')
     filteredListItem.classList.add('filtered-item')
-    button.classList.add('btn')
+    btn.classList.add('btn--filtered')
+    return loadApi();
   }
   function loadApi(){
     fetch(URL).then(function(res){
-      showLoadingMessage('pokemon-list')
-      return res.json()
+      hideLoadingMessage()
+      return res.json();
     }).then(function(json){
       json.results.forEach(function(item){
         let pokemon = {
@@ -58,7 +62,9 @@ let repository = (function(){
     })
   }
   function loadDetails(pokemon){
+    // showLoadingMessage('.filtered-list')
     fetch(pokemon).then(function(res){
+      // hideLoadingMessage()
       return res.json();
     }).then(function(json){
       let details = {
@@ -94,6 +100,31 @@ let repository = (function(){
       throw new Error('This add function only takes objects.<br>')
     }
   }
+  function filterByName(name){
+    // showLoadingMessage('.filtered-list')
+    setTimeout(()=>{
+      // store the filtered array in filtered variable
+      let filtered = list.filter(pokemon => {
+      if(pokemon.name == name){
+        return true;
+      }
+    })
+    // if there is a match, the filtered array will store it in the 1st position
+    if(filtered[0]){
+      console.log(filtered[0])
+      let button = document.querySelector('.btn--filtered');
+      // filterLoadingMessage();
+      
+      // buildSelectedField(filtered[0].name)
+      //insert text
+      button.innerText = `You selected ${name}`
+      //add event
+      events(button, filtered[0])
+    }else{
+      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
+    }
+    }, 2200)
+  }
   function addListItem(item){
     let pokemonListNode = document.querySelector('.pokemon-list');
     let listItem = document.createElement('li');
@@ -106,9 +137,12 @@ let repository = (function(){
     events(btn, item)
   }
   function showLoadingMessage(selector){
-    let loader = `<div class="loading">Loading</div>`;
-    let el = document.getElementsByClassName(selector);
-    return el.innerHTML = loader; 
+    let el = document.querySelector(selector);
+    return el.innerHTML = `<h1 class='loading' >Loading</h1>`;
+  }
+  function hideLoadingMessage(){
+    let el = document.querySelector('.loading');
+    return el.remove();
   }
   function showDetails(pokemon){
     return loadDetails(pokemon)
@@ -122,8 +156,9 @@ let repository = (function(){
   }
   return{
     loadApi : loadApi,
-    loadPage : loadPage
+    loadPage : loadPage,
+    filterByName : filterByName
   }
 })();
-repository.loadPage(); //?
-repository.loadApi(); 
+repository.loadPage()
+repository.filterByName('bulbasaur')
