@@ -28,7 +28,7 @@ let repository = (function(){
   }
   function loadApi(){
     fetch(URL).then(function(res){
-      // hideLoadingMessage()
+      hideLoadingMessage()
       return res.json();
     }).then(function(json){
       json.results.forEach(function(item){
@@ -37,14 +37,13 @@ let repository = (function(){
           url: item.url
         }
         add(pokemon)
-        // console.log(pokemon)
       })
     })
   }
   function loadDetails(pokemon){
-    // showLoadingMessage('.filtered-list')
+    showLoadingMessage('.filtered-list')
     fetch(pokemon).then(function(res){
-      // hideLoadingMessage()
+      hideLoadingMessage()
       return res.json();
     }).then(function(json){
       let details = {
@@ -52,7 +51,6 @@ let repository = (function(){
         imgUrl: json.sprites.front_default
       }
       add(details)
-      // buildListElements(details)
     })
   }
   function add(item){
@@ -117,7 +115,7 @@ let repository = (function(){
     }, 2200)
   }
   function buildListElements(pokemon){
-    let pokemonListNode = document.querySelector('.pokemon-list');
+    let pokemonListNode = document.querySelector('.filtered-list');
     let listItem = document.createElement('li');
     let button = document.createElement('button');
     let pokemonImg = document.createElement('img');
