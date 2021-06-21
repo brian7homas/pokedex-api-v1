@@ -1,43 +1,23 @@
-// const fetch = require('node-fetch');
+// const fetch = require('node-fetch');   needed to run quokka js
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
-  const URL = 'https://pokeapi.co/api/v2/pokemon/';  
+  let pokemonDetails = [{"height":'',"imgUrl": ''}];
+  const URL = 'https://pokeapi.co/api/v2/pokemon/';
   function loadPage(){
-    const root = document.getElementById('root');
-    const div = window.document.createElement('div');
-    let ul = window.document.createElement('ul')
+    let ul = document.querySelector('.pokemon-list')
     let filteredList = document.createElement('ul');
-    
     let li = window.document.createElement('li')
     let btn = window.document.createElement('button')
     let filteredListItem = document.createElement('li');
     let button = document.createElement('button');
     
-    //attatach the div to the body/root
-    root.appendChild(div);
-    //give the div class of container
-    div.classList.add('container');
-    showLoadingMessage('.container')
-    //attacth the ul to the div
-    div.appendChild(ul)
+    showLoadingMessage('.pokemon-list')
     
-    //add another list next the original
     ul.insertAdjacentElement('afterend', filteredList)
     
-    
-    //attatch the li to the ul
     filteredList.append(filteredListItem)
-    //attatch the button to the filtered list item
     filteredListItem.append(btn)
     
-    
-    //attach the li to the ul
-    // ul.appendChild(li)
-    
-    //attach the button to the li
-    // li.appendChild(btn)
-    
-    ul.classList.add('pokemon-list')
     li.classList.add('pokemon-list__item')
     button.classList.add('btn')
     
@@ -48,7 +28,7 @@ let repository = (function(){
   }
   function loadApi(){
     fetch(URL).then(function(res){
-      hideLoadingMessage()
+      // hideLoadingMessage()
       return res.json();
     }).then(function(json){
       json.results.forEach(function(item){
@@ -71,29 +51,45 @@ let repository = (function(){
         height: json.height,
         imgUrl: json.sprites.front_default
       }
-      console.log(details)
+      add(details)
+      // buildListElements(details)
     })
   }
   function add(item){
     if(typeof(item) == 'object' && item != undefined){
-      let itemKeys = Object.keys(item) 
-      // add pattern for name and url keys here
-      let listKeys = Object.keys(list[0]) 
+      let itemKeys = Object.keys(item);
+      let detailsKeys = Object.keys(pokemonDetails[0]);
+      let listKeys = Object.keys(list[0]);
       let addToList = true; 
-      
-      itemKeys.forEach((key, i) => {
-        if(key != listKeys[i]){
-          addToList = false;
-          document.write(`'keys need to match [${listKeys}] <br>`);
-          throw new Error(`'keys need to match [${listKeys}] <br>`)
+      if(!item.name){
+        console.log('detail list')
+        itemKeys.forEach((key, i) => {
+          if(key != detailsKeys[i]){
+            addToList = false;
+            document.write(`'keys need to match [${detailsKeys}] <br>`);
+            throw new Error(`'keys need to match [${detailsKeys}] <br>`)
+          }
+        });
+        if(addToList){
+          pokemonDetails.push(item);
+          // addListItem(item);
+          buildListElements(item);
         }
-      });
-      if(addToList){
-        list.push(item);
-        addListItem(item);
-        return list;
+      }else{
+        console.log('normal list')
+        itemKeys.forEach((key, i) => {
+          if(key != listKeys[i]){
+            addToList = false;
+            document.write(`'keys need to match [${listKeys}] <br>`);
+            throw new Error(`'keys need to match [${listKeys}] <br>`)
+          }
+        });
+        if(addToList){
+          list.push(item);
+          addListItem(item);
+          return list;
+        }
       }
-      //! if the item is an empty object or not an object at all
     }else if(item == undefined ){
       document.write('Make sure your passing an object and that it is not empty <br>')
       document.write('Also make sure your passing [name: string, height: int, type: object]')
@@ -120,19 +116,37 @@ let repository = (function(){
     }
     }, 2200)
   }
+  function buildListElements(pokemon){
+    let pokemonListNode = document.querySelector('.pokemon-list');
+    let listItem = document.createElement('li');
+    let button = document.createElement('button');
+    let pokemonImg = document.createElement('img');
+    
+    button.innerText = `Height:  ${pokemon.height}`;
+    
+    //attacth the listitem to the list iteself
+    pokemonImg.setAttribute('src', `${pokemon.imgUrl}`)
+    button.classList.add('btn');
+    listItem.appendChild(pokemonImg);
+    pokemonListNode.appendChild(listItem)
+    listItem.appendChild(button)
+    console.log(pokemon)
+  }
   function addListItem(item){
     let pokemonListNode = document.querySelector('.pokemon-list');
     let listItem = document.createElement('li');
     let btn = document.createElement('button')
-    //attacth the listitem to the list iteself
     pokemonListNode.appendChild(listItem)
+    //attacth the listitem to the list iteself
     btn.innerText = `${item.name}`;
     btn.classList.add('btn');
     listItem.appendChild(btn);
     events(btn, item)
   }
   function showLoadingMessage(selector){
+    console.log(selector)
     let el = document.querySelector(selector);
+    console.log(el.innerHTML)
     return el.innerHTML = `<h1 class='loading' >Loading</h1>`;
   }
   function hideLoadingMessage(){
@@ -146,11 +160,10 @@ let repository = (function(){
     button.addEventListener("click", ()=>{
       return showDetails(pokemon.url);
     })  
-    //!QUOKKA TESTING
+    //!FOR QUOKKA TESTING
     // return showDetails(pokemon.url);
   }
   return{
-    loadApi : loadApi,
     loadPage : loadPage,
     filterByName : filterByName
   }
