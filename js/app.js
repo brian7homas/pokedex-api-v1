@@ -1,7 +1,7 @@
 // const fetch = require('node-fetch');   needed to run quokka js
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
-  let pokemonDetails = [{"height":'',"imgUrl": ''}];
+  let pokemonDetails = [{"imgUrl": '',"height":'',"weight":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   function loadPage(){
     let ul = document.querySelector('.pokemon-list')
@@ -11,9 +11,9 @@ let repository = (function(){
     let filteredListItem = document.createElement('li');
     let button = document.createElement('button');
     
-    showLoadingMessage('.pokemon-list')
+    showLoadingMessage('.pokemon-list', 'list')
     
-    ul.insertAdjacentElement('afterend', filteredList)
+    ul.insertAdjacentElement('beforebegin', filteredList)
     
     filteredList.append(filteredListItem)
     filteredListItem.append(btn)
@@ -28,7 +28,7 @@ let repository = (function(){
   }
   function loadApi(){
     fetch(URL).then(function(res){
-      hideLoadingMessage()
+      hideLoadingMessage('list')
       return res.json();
     }).then(function(json){
       json.results.forEach(function(item){
@@ -41,14 +41,15 @@ let repository = (function(){
     })
   }
   function loadDetails(pokemon){
-    showLoadingMessage('.filtered-list')
+    showLoadingMessage('.filtered-list', 'details')
     fetch(pokemon).then(function(res){
-      hideLoadingMessage()
+      hideLoadingMessage('details')
       return res.json();
     }).then(function(json){
       let details = {
+        imgUrl: json.sprites.other.dream_world.front_default,
         height: json.height,
-        imgUrl: json.sprites.front_default
+        weight: json.weight
       }
       add(details)
     })
@@ -117,15 +118,17 @@ let repository = (function(){
   function buildListElements(pokemon){
     let pokemonListNode = document.querySelector('.filtered-list');
     let listItem = document.createElement('li');
+    let listItem2 = document.createElement('li');
     let pokemonImg = document.createElement('img');
     
     listItem.innerText = `Height:  ${pokemon.height}`;
+    listItem2.innerText = `Weight:  ${pokemon.weight}`;
     
     //attacth the listitem to the list iteself
     pokemonImg.setAttribute('src', `${pokemon.imgUrl}`)
+    listItem.appendChild(listItem2);
     listItem.appendChild(pokemonImg);
     pokemonListNode.appendChild(listItem)
-    console.log(pokemon)
   }
   function addListItem(item){
     let pokemonListNode = document.querySelector('.pokemon-list');
@@ -138,14 +141,12 @@ let repository = (function(){
     listItem.appendChild(btn);
     events(btn, item)
   }
-  function showLoadingMessage(selector){
-    console.log(selector)
+  function showLoadingMessage(selector, id){    
     let el = document.querySelector(selector);
-    console.log(el.innerHTML)
-    return el.innerHTML = `<h1 class='loading' >Loading</h1>`;
+    return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
   }
-  function hideLoadingMessage(){
-    let el = document.querySelector('.loading');
+  function hideLoadingMessage(id){
+    let el = document.querySelector(`.loading[id="${id}"]`);
     return el.remove();
   }
   function showDetails(pokemon){
