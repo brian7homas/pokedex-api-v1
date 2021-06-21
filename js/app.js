@@ -108,7 +108,7 @@ let repository = (function(){
     if(filtered[0]){
       hideLoadingMessage();
       let button = document.querySelector('.btn--filtered');
-      button.innerText = `You selected ${name}`
+      button.innerText = `You selected ${name} using the filter by name function on line 169`
       events(button, filtered[0])
     }else{
       document.write(`Sorry there is no pokemon by that name in my list. <br>` )
@@ -126,8 +126,9 @@ let repository = (function(){
     
     //attacth the listitem to the list iteself
     pokemonImg.setAttribute('src', `${pokemon.imgUrl}`)
-    listItem.appendChild(listItem2);
+    
     listItem.appendChild(pokemonImg);
+    listItem.appendChild(listItem2);
     pokemonListNode.appendChild(listItem)
   }
   function addListItem(item){
