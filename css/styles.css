@@ -1,25 +1,32 @@
-body{
-  background-color: hsl(120, 100%, 25%);
+.container{
   margin:0;
   padding:0;
   box-sizing: border-box;
   font-size: 1.2rem;
   display:grid;
   grid-template-columns: 1.5fr .5fr;
-  padding:2em;
+  padding:2em 3em;
 }
 .pokemon-list{
-  max-width: 50vw;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  max-height: 50vh;
 }
-.pokemon-list li{
+.pokemon-list li, .filtered-list li{
   list-style: none;
-  margin: .7em auto;
+  margin: .2em 0;
+}
+.filtered-list  img {
+  min-width:100%;
+}
+.ui-title{
+  text-align: center;
+  font-size: 3rem;
 }
 .btn{
   padding:.5em;
   text-align: left;
-  background-color: hsl(120, 100%, 17%);
-  color: hsl(0, 0%, 100%);
   font-size: 1.5rem;
   cursor: pointer;
   transition: all .2s ease-out;
@@ -45,15 +52,5 @@ body{
 }
 .btn--filtered:hover{
   background-color: hsl(120, 100%, 17%);
-  color: hsl(0, 0%, 100%);
-}
-.filtered-list{
-  
-}
-.filtered-item{
-  list-style: none;
-  
-}
-.filtered-pokemon{
-  
+  color: hsl(0, 0%, 0%);
 }
