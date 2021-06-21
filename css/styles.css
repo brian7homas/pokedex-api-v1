@@ -11,14 +11,14 @@
   display:grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto;
-  max-height: 50vh;
+  /* max-height: 50vh; */
 }
 .pokemon-list li, .filtered-list li{
   list-style: none;
   margin: .2em 0;
 }
 .filtered-list  img {
-  min-width:100%;
+  max-width:100%;
 }
 .ui-title{
   text-align: center;
@@ -53,4 +53,15 @@
 .btn--filtered:hover{
   background-color: hsl(120, 100%, 17%);
   color: hsl(0, 0%, 0%);
+}
+
+
+
+@media only screen and (max-width:1000px){
+  .container{ 
+    grid-template-columns: 1fr;
+    padding:0;
+    grid-row-gap:1em;
+  }
+  
 }
