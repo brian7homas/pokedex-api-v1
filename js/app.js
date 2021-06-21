@@ -51,7 +51,8 @@ let repository = (function(){
         height: json.height,
         weight: json.weight
       }
-      add(details)
+      // createModal(details)
+      // add(details)
     })
   }
   function add(item){
@@ -72,7 +73,8 @@ let repository = (function(){
         if(addToList){
           pokemonDetails.push(item);
           // addListItem(item);
-          buildListElements(item);
+          // buildListElements(item);
+          showDetails(item)
         }
       }else{
         console.log('normal list')
@@ -151,7 +153,18 @@ let repository = (function(){
     return el.remove();
   }
   function showDetails(pokemon){
+    createModal()
+    modalEvents()
     return loadDetails(pokemon)
+  }
+  function modalEvents(){
+    let modal = document.querySelector('.modal');
+    let closeBtn = document.querySelector('.modal__close');
+    
+    closeBtn.addEventListener('click', function(){
+      console.log(modal)
+      return closeModal()
+    })
   }
   function events(button, pokemon){
     button.addEventListener("click", ()=>{
@@ -160,10 +173,43 @@ let repository = (function(){
     //!FOR QUOKKA TESTING
     // return showDetails(pokemon.url);
   }
+  function createModal(){
+    let mainContainer = document.querySelector('.container');
+    let modal = document.createElement('div');
+    let modalCloseBtn = document.createElement('span');
+    let modalContainer = document.createElement('div');
+    let modalHeadline = document.createElement('h1');
+    let modalImg = document.createElement('img');
+    let modalCopy = document.createElement('p');
+
+    mainContainer.insertAdjacentElement('afterend', modal);
+    modal.append(modalContainer);
+    modalContainer.appendChild(modalCloseBtn);
+    modalContainer.appendChild(modalHeadline);
+    modalContainer.appendChild(modalImg);
+    modalContainer.appendChild(modalCopy);
+    
+    //add classes to new elements
+    modal.classList.add('modal');
+    modalCloseBtn.classList.add('modal__close');
+    modalContainer.classList.add('modal__container');
+    modalHeadline.classList.add('modal__headline');
+    modalImg.classList.add('modal__img');
+    modalCopy.classList.add('modal__copy');
+    
+    modalCloseBtn.innerText = `Close`;
+    // modalHeadline.innerText = `Height:  ${details.height}`;
+    // modalCopy.innerText = `Weight:  ${details.weight}`;
+    // modalImg.setAttribute('src', `${details.imgUrl}`)
+    modal.classList.add('modal--is-visible');
+  }
+  function closeModal(){
+    return document.querySelector('.modal').classList.remove('modal--is-visible')
+  }
   return{
     loadPage : loadPage,
-    filterByName : filterByName
+    filterByName : filterByName,
   }
 })();
 repository.loadPage()
-repository.filterByName('bulbasaur')
+// repository.filterByName('bulbasaur')
