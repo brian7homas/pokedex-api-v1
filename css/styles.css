@@ -73,10 +73,15 @@
 .modal--is-visible{
   display:grid;
 }
+.modal__close{
+  cursor:pointer;
+  float:right;
+  position:relative;
+}
 .modal__container{
   background-color: hsl(0, 5%, 60%);
   border-radius: 8px;
-  padding: 7em;
+  padding: .5em 3em;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;

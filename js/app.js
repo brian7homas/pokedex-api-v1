@@ -4,26 +4,15 @@ let repository = (function(){
   let pokemonDetails = [{"imgUrl": '',"height":'',"weight":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   function loadPage(){
-    let ul = document.querySelector('.pokemon-list')
+    let ul = document.querySelector('.pokemon-list');
+
     let filteredList = document.createElement('ul');
-    let li = window.document.createElement('li')
-    let btn = window.document.createElement('button')
-    let filteredListItem = document.createElement('li');
-    let button = document.createElement('button');
     
     showLoadingMessage('.pokemon-list', 'list')
     
     ul.insertAdjacentElement('beforebegin', filteredList)
     
-    filteredList.append(filteredListItem)
-    filteredListItem.append(btn)
-    
-    li.classList.add('pokemon-list__item')
-    button.classList.add('btn')
-    
     filteredList.classList.add('filtered-list')
-    filteredListItem.classList.add('filtered-item')
-    btn.classList.add('btn--filtered')
     return loadApi();
   }
   function loadApi(){
@@ -48,11 +37,12 @@ let repository = (function(){
       hideLoadingMessage('details')
       let details = {
         imgUrl: json.sprites.other.dream_world.front_default,
+        name: json.name,
         height: json.height,
         weight: json.weight
       }
-      // createModal(details)
-      // add(details)
+      createModal(details)
+      modalEvents()
     })
   }
   function add(item){
@@ -62,7 +52,6 @@ let repository = (function(){
       let listKeys = Object.keys(list[0]);
       let addToList = true; 
       if(!item.name){
-        console.log('detail list')
         itemKeys.forEach((key, i) => {
           if(key != detailsKeys[i]){
             addToList = false;
@@ -153,17 +142,16 @@ let repository = (function(){
     return el.remove();
   }
   function showDetails(pokemon){
-    createModal()
-    modalEvents()
     return loadDetails(pokemon)
   }
   function modalEvents(){
     let modal = document.querySelector('.modal');
     let closeBtn = document.querySelector('.modal__close');
-    
+    modal.addEventListener('click', function(){
+      return closeModal();
+    })
     closeBtn.addEventListener('click', function(){
-      console.log(modal)
-      return closeModal()
+      return closeModal();
     })
   }
   function events(button, pokemon){
@@ -173,38 +161,50 @@ let repository = (function(){
     //!FOR QUOKKA TESTING
     // return showDetails(pokemon.url);
   }
-  function createModal(){
+  function createModal(details){
     let mainContainer = document.querySelector('.container');
-    let modal = document.createElement('div');
-    let modalCloseBtn = document.createElement('span');
-    let modalContainer = document.createElement('div');
-    let modalHeadline = document.createElement('h1');
-    let modalImg = document.createElement('img');
-    let modalCopy = document.createElement('p');
-
-    mainContainer.insertAdjacentElement('afterend', modal);
-    modal.append(modalContainer);
-    modalContainer.appendChild(modalCloseBtn);
-    modalContainer.appendChild(modalHeadline);
-    modalContainer.appendChild(modalImg);
-    modalContainer.appendChild(modalCopy);
+    let currentModal = document.querySelector('.modal')
+    if(currentModal){
+      document.querySelector('.modal').remove()
+    }else{
+      let modal = document.createElement('div');
+      let modalCloseBtn = document.createElement('span');
+      let modalContainer = document.createElement('div');
+      let modalHeadline = document.createElement('h1');
+      let modalImg = document.createElement('img');
+      let modalCopy = document.createElement('ul');
+      
+      mainContainer.insertAdjacentElement('afterend', modal);
+      modal.append(modalContainer);
+      modalContainer.appendChild(modalCloseBtn);
+      modalContainer.appendChild(modalHeadline);
+      modalContainer.appendChild(modalImg);
+      modalContainer.appendChild(modalCopy);
+      
+      //add classes to new elements
+      modal.classList.add('modal');
+      modalCloseBtn.classList.add('modal__close');
+      modalContainer.classList.add('modal__container');
+      modalHeadline.classList.add('modal__headline');
+      modalImg.classList.add('modal__img');
+      modalCopy.classList.add('modal__copy');
+      
+      modalCloseBtn.innerText = `Close`;
+      modalHeadline.innerText = `Name:  ${details.name}`;
+      modalCopy.innerHTML = `
+          <li>Weight:  ${details.weight}</li>
+          <li>Height:  ${details.height}</li>
+        `;
+      modalImg.setAttribute('src', `${details.imgUrl}`)
+      modal.classList.add('modal--is-visible');
+    }
     
-    //add classes to new elements
-    modal.classList.add('modal');
-    modalCloseBtn.classList.add('modal__close');
-    modalContainer.classList.add('modal__container');
-    modalHeadline.classList.add('modal__headline');
-    modalImg.classList.add('modal__img');
-    modalCopy.classList.add('modal__copy');
     
-    modalCloseBtn.innerText = `Close`;
-    // modalHeadline.innerText = `Height:  ${details.height}`;
-    // modalCopy.innerText = `Weight:  ${details.weight}`;
-    // modalImg.setAttribute('src', `${details.imgUrl}`)
-    modal.classList.add('modal--is-visible');
+    
   }
   function closeModal(){
-    return document.querySelector('.modal').classList.remove('modal--is-visible')
+    document.querySelector('.modal').classList.remove('modal--is-visible');
+    return document.querySelector('.modal').remove();
   }
   return{
     loadPage : loadPage,
