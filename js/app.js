@@ -117,17 +117,14 @@ let repository = (function(){
   function buildListElements(pokemon){
     let pokemonListNode = document.querySelector('.filtered-list');
     let listItem = document.createElement('li');
-    let button = document.createElement('button');
     let pokemonImg = document.createElement('img');
     
-    button.innerText = `Height:  ${pokemon.height}`;
+    listItem.innerText = `Height:  ${pokemon.height}`;
     
     //attacth the listitem to the list iteself
     pokemonImg.setAttribute('src', `${pokemon.imgUrl}`)
-    button.classList.add('btn');
     listItem.appendChild(pokemonImg);
     pokemonListNode.appendChild(listItem)
-    listItem.appendChild(button)
     console.log(pokemon)
   }
   function addListItem(item){
