@@ -28,9 +28,9 @@ let repository = (function(){
   }
   function loadApi(){
     fetch(URL).then(function(res){
-      hideLoadingMessage('list')
       return res.json();
     }).then(function(json){
+      hideLoadingMessage('list')
       json.results.forEach(function(item){
         let pokemon = {
           name: item.name,
@@ -43,9 +43,9 @@ let repository = (function(){
   function loadDetails(pokemon){
     showLoadingMessage('.filtered-list', 'details')
     fetch(pokemon).then(function(res){
-      hideLoadingMessage('details')
       return res.json();
     }).then(function(json){
+      hideLoadingMessage('details')
       let details = {
         imgUrl: json.sprites.other.dream_world.front_default,
         height: json.height,
