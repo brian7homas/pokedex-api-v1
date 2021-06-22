@@ -19,9 +19,6 @@
 .filtered-list{
   padding:0;
 }
-.filtered-list  img {
-  max-width:100%;
-}
 .ui-title{
   padding:.5em;
   text-align: center;
@@ -79,13 +76,17 @@
   position:relative;
 }
 .modal__container{
-  background-color: hsl(0, 5%, 60%);
+  background-repeat:no-repeat;
+  background-size: cover;
   border-radius: 8px;
   padding: .5em 3em;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
   -o-border-radius: 8px;
+}
+.modal__img{
+  max-width:80%;
 }
 .modal__headline{
   font-size: 4rem;
@@ -101,7 +102,14 @@
   }
   .btn--filtered{
   }
-  
+  .modal__img{
+    max-width: 50%
+  }
+  .modal__container{
+    padding:3em;
+    max-height:100vh;
+    max-width:100vw;
+  }
 }
 
 @media only screen and (max-width:600px){

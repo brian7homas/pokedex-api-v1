@@ -50,7 +50,8 @@ let repository = (function(){
       let itemKeys = Object.keys(item);
       let detailsKeys = Object.keys(pokemonDetails[0]);
       let listKeys = Object.keys(list[0]);
-      let addToList = true; 
+      let addToList = true;
+      //if item.doesnt have the name and detail url add it to the pokemonDetail array 
       if(!item.name){
         itemKeys.forEach((key, i) => {
           if(key != detailsKeys[i]){
@@ -61,12 +62,11 @@ let repository = (function(){
         });
         if(addToList){
           pokemonDetails.push(item);
-          // addListItem(item);
-          // buildListElements(item);
           showDetails(item)
         }
-      }else{
-        console.log('normal list')
+      }
+      //else if the item goes into the list array
+      else{
         itemKeys.forEach((key, i) => {
           if(key != listKeys[i]){
             addToList = false;
@@ -127,7 +127,6 @@ let repository = (function(){
     let listItem = document.createElement('li');
     let btn = document.createElement('button')
     pokemonListNode.appendChild(listItem)
-    //attacth the listitem to the list iteself
     btn.innerText = `${item.name}`;
     btn.classList.add('btn');
     listItem.appendChild(btn);
@@ -147,8 +146,17 @@ let repository = (function(){
   function modalEvents(){
     let modal = document.querySelector('.modal');
     let closeBtn = document.querySelector('.modal__close');
-    modal.addEventListener('click', function(){
-      return closeModal();
+    window.addEventListener('keydown',(e)=>{
+      if(e.key === 'Escape'){
+        return closeModal();
+      }
+    })
+    modal.addEventListener('click', function(e){
+      let target = e.target
+      if(target === modal){
+        return closeModal();
+      }
+      
     })
     closeBtn.addEventListener('click', function(){
       return closeModal();
@@ -173,7 +181,7 @@ let repository = (function(){
       let modalHeadline = document.createElement('h1');
       let modalImg = document.createElement('img');
       let modalCopy = document.createElement('ul');
-      
+      modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(100, 0%, 0%, .75), hsla(0, 0%, 60%, 1)), url(${details.imgUrl});`)
       mainContainer.insertAdjacentElement('afterend', modal);
       modal.append(modalContainer);
       modalContainer.appendChild(modalCloseBtn);
