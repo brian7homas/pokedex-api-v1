@@ -116,59 +116,6 @@ let repository = (function(){
   function getPositionX(event) {
     return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
   }
-  
-  // use a HOF so we have index in a closure
-  function touchStart(index) {
-    return function (event) {
-      let slider = document.querySelector('.pokemon-list')
-      currentIndex = index
-      startPos = getPositionX(event)
-      isDragging = true
-      animationID = requestAnimationFrame(animation)
-      slider.classList.add('grabbing')
-    }
-  }
-  
-  function touchMove(event) {
-    if (isDragging) {
-      const currentPosition = getPositionX(event)
-      currentTranslate = prevTranslate + currentPosition - startPos
-    }
-  }
-  
-  function touchEnd() {
-    let slider = document.querySelector('.pokemon-list')
-    slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
-    cancelAnimationFrame(animationID)
-    isDragging = false
-    const movedBy = currentTranslate - prevTranslate
-  
-    // if moved enough negative then snap to next slide if there is one
-    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1
-  
-    // if moved enough positive then snap to previous slide if there is one
-    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1
-  
-    setPositionByIndex()
-  
-    slider.classList.remove('grabbing')
-  }
-  
-  function animation() {
-    setSliderPosition()
-    if (isDragging) requestAnimationFrame(animation)
-  }
-  
-  function setPositionByIndex() {
-    currentTranslate = currentIndex * -window.innerWidth
-    prevTranslate = currentTranslate
-    setSliderPosition()
-  }
-  
-  function setSliderPosition() {
-    let slider = document.querySelector('.pokemon-list')
-    slider.style.transform = `translateX(${currentTranslate}px)`
-  }
   function filterByName(name){
     showLoadingMessage('.filtered-list', 'load-search')
     setTimeout(()=>{
@@ -202,6 +149,68 @@ let repository = (function(){
   function showDetails(pokemon){
     return createModal(pokemon)
   }
+  
+  // use a HOF so we have index in a closure
+  function touchStart(index) {
+    return function (event) {
+      let slider = document.querySelector('.pokemon-list')
+      currentIndex = index
+      startPos = getPositionX(event)
+      isDragging = true
+      animationID = requestAnimationFrame(animation)
+      slider.classList.add('grabbing')
+    }
+  }
+  
+  function touchMove(event) {
+    if (isDragging) {
+      const currentPosition = getPositionX(event)
+      currentTranslate = prevTranslate + currentPosition - startPos
+    }
+  }
+  function touchEnd() {
+    let slider = document.querySelector('.pokemon-list')
+    slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
+    cancelAnimationFrame(animationID)
+    isDragging = false
+    const movedBy = currentTranslate - prevTranslate
+  
+    // if moved enough negative then snap to next slide if there is one
+    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1
+  
+    // if moved enough positive then snap to previous slide if there is one
+    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1
+  
+    setPositionByIndex()
+  
+    slider.classList.remove('grabbing')
+  }
+  function animation() {
+    setSliderPosition()
+    if (isDragging) requestAnimationFrame(animation)
+  }
+  function setPositionByIndex() {
+    currentTranslate = currentIndex * -window.innerWidth
+    prevTranslate = currentTranslate
+    setSliderPosition()
+  }
+  function setSliderPosition() {
+    let slider = document.querySelector('.pokemon-list')
+    slider.style.transform = `translateX(${currentTranslate}px)`
+  }
+  
+  
+  
+  
+  // MAIN BUTTON EVENT LISTENER
+  function events(button, pokemon){
+    button.addEventListener("click", ()=>{
+      return showDetails(pokemon);
+    })  
+    //!FOR QUOKKA TESTING
+    // return showDetails(pokemon.url);
+  }
+  // MODAL SPECIFIC EVENTS
   function modalEvents(){
     let modal = document.querySelector('.modal');
     let closeBtn = document.querySelector('.modal__close');
@@ -215,62 +224,77 @@ let repository = (function(){
       if(target === modal){
         return closeModal();
       }
-      
     })
     closeBtn.addEventListener('click', function(){
       return closeModal();
     })
   }
-  function events(button, pokemon){
-    button.addEventListener("click", ()=>{
-      return showDetails(pokemon);
-    })  
-    //!FOR QUOKKA TESTING
-    // return showDetails(pokemon.url);
-  }
   function createModal(details){
     let mainContainer = document.querySelector('.container');
     let currentModal = document.querySelector('.modal')
     if(currentModal){
+      //removes the modal if there is one in the DOM
       document.querySelector('.modal').remove()
     }else{
       let modal = document.createElement('div');
-      let modalCloseBtn = document.createElement('span');
-      let modalContainer = document.createElement('div');
-      let modalHeadline = document.createElement('h1');
-      let modalImg = document.createElement('img');
-      let modalCopy = document.createElement('ul');
-      modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(100, 0%, 0%, .75), hsla(0, 0%, 60%, 1)), url(${details.imgUrl});`)
       mainContainer.insertAdjacentElement('afterend', modal);
-      modal.append(modalContainer);
-      modalContainer.appendChild(modalCloseBtn);
-      modalContainer.appendChild(modalHeadline);
-      modalContainer.appendChild(modalImg);
-      modalContainer.appendChild(modalCopy);
-      
-      //add classes to new elements
-      modal.classList.add('modal');
-      modalCloseBtn.classList.add('modal__close');
-      modalContainer.classList.add('modal__container');
-      modalHeadline.classList.add('modal__headline');
-      modalImg.classList.add('modal__img');
-      modalCopy.classList.add('modal__copy');
-      
-      modalCloseBtn.innerText = `Close`;
-      modalHeadline.innerText = `Name:  ${details.name}`;
-      modalCopy.innerHTML = `
-          <li>Weight:  ${details.weight}</li>
-          <li>Height:  ${details.height}</li>
-        `;
-      modalImg.setAttribute('src', `${details.imgUrl}`)
       modal.classList.add('modal--is-visible');
+      modal.classList.add('modal');
+      showLoadingMessage('.modal', 'modal-container');
+      setTimeout(function(){
+        hideLoadingMessage('modal-container')
+        let modalCloseBtn = document.createElement('span');
+        let modalContainer = document.createElement('div');
+        let modalHeadline = document.createElement('h1');
+        let modalImg = document.createElement('img');
+        let modalCopy = document.createElement('ul');
+        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(100, 0%, 0%, .75), hsla(0, 0%, 60%, 1)), url(${details.imgUrl});`)
+        
+        
+        modal.append(modalContainer);
+        modalContainer.appendChild(modalCloseBtn);
+        modalContainer.classList.add('modal__container');
+        modalCloseBtn.classList.add('modal__close');
+        modalContainer.appendChild(modalHeadline);
+        modalContainer.appendChild(modalImg);
+        modalContainer.appendChild(modalCopy);
+        
+        //add classes to new elements
+        modalHeadline.classList.add('modal__headline');
+        modalImg.classList.add('modal__img');
+        modalCopy.classList.add('modal__copy');
+        
+        
+        
+        
+        modalCloseBtn.innerText = `Close`;
+        modalHeadline.innerText = `Name:  ${details.name}`;
+        modalCopy.innerHTML = `
+            <li>Weight:  ${details.weight}</li>
+            <li>Height:  ${details.height}</li>
+          `;
+        modalImg.setAttribute('src', `${details.imgUrl}`)
+        
+        modalEvents()
+        }, 2000)
+      
+      
+        
+        
+      //add the text and img to the modal
+      
     }
-    modalEvents()
+    
+    
   }
   function closeModal(){
     document.querySelector('.modal').classList.remove('modal--is-visible');
     return document.querySelector('.modal').remove();
   }
+  
+  
+  
+  
   return{
     loadPage : loadPage,
     filterByName : filterByName,
