@@ -74,7 +74,7 @@ let repository = (function(){
         }
       });
       if(addToList){
-        detailsKeys.push(item);
+        pokemonDetails.push(item);
       }
     }
     // make request
@@ -170,18 +170,20 @@ let repository = (function(){
     slider.style.transform = `translateX(${currentTranslate}px)`
   }
   function filterByName(name){
-    showLoadingMessage('.btn--filtered')
+    showLoadingMessage('.filtered-list', 'load-search')
     setTimeout(()=>{
       // store the filtered array in filtered variable
-      let filtered = list.filter(pokemon => {
+      
+      let filtered = pokemonDetails.filter(pokemon => {
+        console.log(pokemon.name)
       if(pokemon.name == name){
         return true;
       }
     })
     // if there is a match, the filtered array will store it in the 1st position
     if(filtered[0]){
-      hideLoadingMessage();
-      let button = document.querySelector('.btn--filtered');
+      // hideLoadingMessage('load-search');
+      let button = document.querySelector('.filtered-list');
       button.innerText = `You selected ${name} using the filter by name function on line 169`
       events(button, filtered[0])
     }else{
@@ -275,4 +277,4 @@ let repository = (function(){
   }
 })();
 repository.loadPage()
-// repository.filterByName('bulbasaur')
+repository.filterByName('bulbasaur')
