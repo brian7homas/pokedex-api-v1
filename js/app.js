@@ -1,8 +1,21 @@
-// const fetch = require('node-fetch');   needed to run quokka js
+// const fetch = require('node-fetch');   
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
-  let pokemonDetails = [{"imgUrl": '',"height":'',"weight":''}];
+  let pokemonDetails = [{"imgUrl": '', "name":'',"height":'',"weight":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
+  
+  //dragging active
+  let isDragging = false;
+  //where dragging starts
+  let startPos = 0;
+  //value for direction
+  let currentTranslate = 0;
+  let prevTranslate = 0;
+  //animation will use requestanimation frame
+  let animationID = 0;
+  //current slide
+  let currentIndex = 0;
+  
   function loadPage(){
     let ul = document.querySelector('.pokemon-list');
 
@@ -25,66 +38,136 @@ let repository = (function(){
           name: item.name,
           url: item.url
         }
-        add(pokemon)
+        loadDetails(item.url)
       })
     })
   }
   function loadDetails(pokemon){
-    showLoadingMessage('.filtered-list', 'details')
     fetch(pokemon).then(function(res){
       return res.json();
     }).then(function(json){
-      hideLoadingMessage('details')
       let details = {
         imgUrl: json.sprites.other.dream_world.front_default,
         name: json.name,
         height: json.height,
         weight: json.weight
       }
-      createModal(details)
-      modalEvents()
+      add(details)
     })
   }
   function add(item){
-    if(typeof(item) == 'object' && item != undefined){
+    if(!item || item == undefined){
+      document.write('Make sure your passing an object and that it is not empty <br>')
+      document.write('Also make sure your passing [name: string, height: int, type: object]')
+      throw new Error('This add function only takes objects.<br>')
+    }else if(typeof(item) == 'object'){
       let itemKeys = Object.keys(item);
       let detailsKeys = Object.keys(pokemonDetails[0]);
       let listKeys = Object.keys(list[0]);
       let addToList = true;
-      //if item.doesnt have the name and detail url add it to the pokemonDetail array 
-      if(!item.name){
-        itemKeys.forEach((key, i) => {
-          if(key != detailsKeys[i]){
-            addToList = false;
-            document.write(`'keys need to match [${detailsKeys}] <br>`);
-            throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-          }
-        });
-        if(addToList){
-          pokemonDetails.push(item);
-          showDetails(item)
+      
+      itemKeys.forEach((key, i) => {
+        if(key != detailsKeys[i]){
+          addToList = false;
+          document.write(`'keys need to match [${listKeys}] <br>`);
+          throw new Error(`'keys need to match [${listKeys}] <br>`)
         }
+      });
+      if(addToList){
+        detailsKeys.push(item);
       }
-      //else if the item goes into the list array
-      else{
-        itemKeys.forEach((key, i) => {
-          if(key != listKeys[i]){
-            addToList = false;
-            document.write(`'keys need to match [${listKeys}] <br>`);
-            throw new Error(`'keys need to match [${listKeys}] <br>`)
-          }
-        });
-        if(addToList){
-          list.push(item);
-          addListItem(item);
-          return list;
-        }
-      }
-    }else if(item == undefined ){
-      document.write('Make sure your passing an object and that it is not empty <br>')
-      document.write('Also make sure your passing [name: string, height: int, type: object]')
-      throw new Error('This add function only takes objects.<br>')
     }
+    // make request
+    let pokemonListNode = document.querySelector('.pokemon-list');
+    let listItem = document.createElement('li');
+    let listItemImage = document.createElement('img');
+    let btn = document.createElement('button')
+    pokemonListNode.appendChild(listItem)
+    listItem.appendChild(listItemImage)
+    listItem.appendChild(btn);
+    btn.innerText = `${item.name}`;
+    btn.classList.add('pokemon-list__card');
+    listItem.classList.add('pokemon-list__item')
+    listItem.classList.add('slides')
+    listItemImage.setAttribute('src', `${item.imgUrl}`)
+    events(btn, item)
+    slider()
+  }
+  function slider(){
+    // const slider = document.querySelector('.pokemon-list');
+    const slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
+
+    slides.forEach((slide, index) => {
+      const slideImage = slide.querySelector('img')
+      // disable default image drag
+      slideImage.addEventListener('dragstart', (e) => e.preventDefault())
+      // touch events
+      slide.addEventListener('touchstart', touchStart(index))
+      slide.addEventListener('touchend', touchEnd)
+      slide.addEventListener('touchmove', touchMove)
+      // mouse events
+      slide.addEventListener('mousedown', touchStart(index))
+      slide.addEventListener('mouseup', touchEnd)
+      slide.addEventListener('mousemove', touchMove)
+      slide.addEventListener('mouseleave', touchEnd)
+    })
+    
+  }
+  function getPositionX(event) {
+    return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
+  }
+  
+  // use a HOF so we have index in a closure
+  function touchStart(index) {
+    return function (event) {
+      let slider = document.querySelector('.pokemon-list')
+      currentIndex = index
+      startPos = getPositionX(event)
+      isDragging = true
+      animationID = requestAnimationFrame(animation)
+      slider.classList.add('grabbing')
+    }
+  }
+  
+  function touchMove(event) {
+    if (isDragging) {
+      const currentPosition = getPositionX(event)
+      currentTranslate = prevTranslate + currentPosition - startPos
+    }
+  }
+  
+  function touchEnd() {
+    let slider = document.querySelector('.pokemon-list')
+    slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
+    cancelAnimationFrame(animationID)
+    isDragging = false
+    const movedBy = currentTranslate - prevTranslate
+  
+    // if moved enough negative then snap to next slide if there is one
+    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1
+  
+    // if moved enough positive then snap to previous slide if there is one
+    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1
+  
+    setPositionByIndex()
+  
+    slider.classList.remove('grabbing')
+  }
+  
+  function animation() {
+    setSliderPosition()
+    if (isDragging) requestAnimationFrame(animation)
+  }
+  
+  function setPositionByIndex() {
+    currentTranslate = currentIndex * -window.innerWidth
+    prevTranslate = currentTranslate
+    setSliderPosition()
+  }
+  
+  function setSliderPosition() {
+    let slider = document.querySelector('.pokemon-list')
+    slider.style.transform = `translateX(${currentTranslate}px)`
   }
   function filterByName(name){
     showLoadingMessage('.btn--filtered')
@@ -106,42 +189,16 @@ let repository = (function(){
     }
     }, 2200)
   }
-  function buildListElements(pokemon){
-    let pokemonListNode = document.querySelector('.filtered-list');
-    let listItem = document.createElement('li');
-    let listItem2 = document.createElement('li');
-    let pokemonImg = document.createElement('img');
-    
-    listItem.innerText = `Height:  ${pokemon.height}`;
-    listItem2.innerText = `Weight:  ${pokemon.weight}`;
-    
-    //attacth the listitem to the list iteself
-    pokemonImg.setAttribute('src', `${pokemon.imgUrl}`)
-    
-    listItem.appendChild(pokemonImg);
-    listItem.appendChild(listItem2);
-    pokemonListNode.appendChild(listItem)
-  }
-  function addListItem(item){
-    let pokemonListNode = document.querySelector('.pokemon-list');
-    let listItem = document.createElement('li');
-    let btn = document.createElement('button')
-    pokemonListNode.appendChild(listItem)
-    btn.innerText = `${item.name}`;
-    btn.classList.add('btn');
-    listItem.appendChild(btn);
-    events(btn, item)
-  }
   function showLoadingMessage(selector, id){    
     let el = document.querySelector(selector);
     return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
   }
   function hideLoadingMessage(id){
-    let el = document.querySelector(`.loading[id="${id}"]`);
+    let el = document.querySelector(`#${id}`);
     return el.remove();
   }
   function showDetails(pokemon){
-    return loadDetails(pokemon)
+    return createModal(pokemon)
   }
   function modalEvents(){
     let modal = document.querySelector('.modal');
@@ -164,7 +221,7 @@ let repository = (function(){
   }
   function events(button, pokemon){
     button.addEventListener("click", ()=>{
-      return showDetails(pokemon.url);
+      return showDetails(pokemon);
     })  
     //!FOR QUOKKA TESTING
     // return showDetails(pokemon.url);
@@ -206,9 +263,7 @@ let repository = (function(){
       modalImg.setAttribute('src', `${details.imgUrl}`)
       modal.classList.add('modal--is-visible');
     }
-    
-    
-    
+    modalEvents()
   }
   function closeModal(){
     document.querySelector('.modal').classList.remove('modal--is-visible');
