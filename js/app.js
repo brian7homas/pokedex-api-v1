@@ -87,6 +87,7 @@ let repository = (function(){
     listItem.appendChild(btn);
     btn.innerText = `${item.name} details`;
     btn.classList.add('pokemon-list__card');
+    btn.classList.add('btn');
     listItem.classList.add('pokemon-list__item')
     listItem.classList.add('slides')
     listItemImage.setAttribute('src', `${item.imgUrl}`)
@@ -248,7 +249,7 @@ let repository = (function(){
         let modalHeadline = document.createElement('h1');
         let modalImg = document.createElement('img');
         let modalCopy = document.createElement('ul');
-        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(100, 0%, 0%, .75), hsla(0, 0%, 60%, 1)), url(${details.imgUrl});`)
+        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
         
         
         modal.append(modalContainer);
