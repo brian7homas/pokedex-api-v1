@@ -85,7 +85,7 @@ let repository = (function(){
     pokemonListNode.appendChild(listItem)
     listItem.appendChild(listItemImage)
     listItem.appendChild(btn);
-    btn.innerText = `${item.name}`;
+    btn.innerText = `${item.name} details`;
     btn.classList.add('pokemon-list__card');
     listItem.classList.add('pokemon-list__item')
     listItem.classList.add('slides')
