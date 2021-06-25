@@ -63,6 +63,13 @@ let repository = (function(){
     loadApi()
   
   }
+  function buildCarouselItems(details){
+    let item = `<div class="carousel-item">
+        <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
+      </div>`
+    let hook = document.querySelector('.carousel-inner')
+    hook.insertAdjacentHTML('afterbegin', item)
+  }
   function loadApi(){
     fetch(URL).then(function(res){
       return res.json();
@@ -89,13 +96,9 @@ let repository = (function(){
       }
       // add(details)
       function test(){
-        let item = `<div class="carousel-item">
-        <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
-      </div>`
-      let hook = document.querySelector('.carousel-inner')
-        hook.insertAdjacentHTML('afterbegin', item)
       }
-      test()
+      // test()
+      buildCarouselItems(details)
     })
   }
   function add(item){
