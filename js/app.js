@@ -60,18 +60,24 @@ let repository = (function(){
     // root.appendChild(carousel)
     root.insertAdjacentHTML('beforeend', carousel)
     loadApi()
-  
   }
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
       let itemHook = document.querySelector('.carousel-inner')
-      
+      let name = details.name;
+      function capitalize(str){
+        String(str)
+        let lower = str.toLowerCase();
+        console.log(typeof(str))
+        name = str.charAt(0).toUpperCase() + lower.slice(1)
+      }
+      capitalize(name)
       let item = `<div class="carousel-item">
         <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
-        <div class="carousel-caption d-none d-md-block">
-            <h3>${details.name}</h3>
-            <span>Height:${details.height}</span>
-            <span>Weight:${details.weight}</span>
+        <div class="carousel-caption d-none d-md-block align-text-top">
+            <h3 class="display-1">${name}</h3>
+            <span class="h2 m-2">Height:${details.height}</span>
+            <span class="h2">Weight:${details.weight}</span>
         </div>
       </div>`
       itemHook.insertAdjacentHTML('beforeend', item)
@@ -81,6 +87,8 @@ let repository = (function(){
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
+    indicatorHook.classList.add('position-absolute')
+    indicatorHook.classList.add('fixed-top')
     let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class=""><img class="w-100" src="${details.png}" /></li>`
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
