@@ -64,11 +64,18 @@ let repository = (function(){
   
   }
   function buildCarouselItems(details){
-    let item = `<div class="carousel-item">
-        <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
-      </div>`
+    let checkForActiveClass = document.querySelector('.carousel-item');
     let hook = document.querySelector('.carousel-inner')
+    let item = `<div class="carousel-item">
+      <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
+    </div>`
     hook.insertAdjacentHTML('afterbegin', item)
+    if(!checkForActiveClass){
+      document.querySelector('.carousel-item').classList.add('active')
+      return hook.insertAdjacentHTML('afterbegin', item)
+    }else{
+      return hook.insertAdjacentHTML('afterbegin', item)
+    }
   }
   function loadApi(){
     fetch(URL).then(function(res){
@@ -94,13 +101,35 @@ let repository = (function(){
         height: json.height,
         weight: json.weight
       }
-      // add(details)
-      function test(){
-      }
-      // test()
       buildCarouselItems(details)
     })
   }
+  
+  function filterByName(name){
+    showLoadingMessage('.filtered-list', 'load-search')
+    setTimeout(()=>{
+      // store the filtered array in filtered variable
+      
+      let filtered = pokemonDetails.filter(pokemon => {
+        console.log(pokemon.name)
+      if(pokemon.name == name){
+        return true;
+      }
+    })
+    // if there is a match, the filtered array will store it in the 1st position
+    if(filtered[0]){
+      // hideLoadingMessage('load-search');
+      let button = document.querySelector('.filtered-list');
+      button.innerText = `You selected ${name} using the filter by name function on line 169`
+      events(button, filtered[0])
+    }else{
+      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
+    }
+    }, 2200)
+  }
+  
+  
+  
   function add(item){
     if(!item || item == undefined){
       document.write('Make sure your passing an object and that it is not empty <br>')
@@ -177,28 +206,7 @@ let repository = (function(){
   function getPositionX(event) {
     return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
   }
-  function filterByName(name){
-    showLoadingMessage('.filtered-list', 'load-search')
-    setTimeout(()=>{
-      // store the filtered array in filtered variable
-      
-      let filtered = pokemonDetails.filter(pokemon => {
-        console.log(pokemon.name)
-      if(pokemon.name == name){
-        return true;
-      }
-    })
-    // if there is a match, the filtered array will store it in the 1st position
-    if(filtered[0]){
-      // hideLoadingMessage('load-search');
-      let button = document.querySelector('.filtered-list');
-      button.innerText = `You selected ${name} using the filter by name function on line 169`
-      events(button, filtered[0])
-    }else{
-      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
-    }
-    }, 2200)
-  }
+  
   function showLoadingMessage(selector, id){    
     let el = document.querySelector(selector);
     return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
