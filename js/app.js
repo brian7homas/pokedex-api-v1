@@ -11,7 +11,7 @@
 // </div>
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
-  let pokemonDetails = [{"imgUrl": '', "name":'',"height":'',"weight":''}];
+  let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   //dragging active
@@ -25,6 +25,7 @@ let repository = (function(){
   let animationID = 0;
   //current slide
   let currentIndex = 0;
+  let indicatorNum = 0;
   function loadPage(){
     let ul = document.querySelector('.pokemon-list');
 
@@ -41,9 +42,7 @@ let repository = (function(){
     const root = document.querySelector('#root');
     const carousel = ` <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
     <ol class="carousel-indicators">
-      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+      
     </ol>
     <div class="carousel-inner">
     
@@ -65,16 +64,22 @@ let repository = (function(){
   }
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
-    let hook = document.querySelector('.carousel-inner')
+    let itemHook = document.querySelector('.carousel-inner')
+    
     let item = `<div class="carousel-item">
-      <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
+      <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
+      <div class="carousel-caption d-none d-md-block">
+          <h3>${details.name}</h3>
+          <span>Height:${details.height}</span>
+          <span>Weight:${details.weight}</span>
+      </div>
     </div>`
-    hook.insertAdjacentHTML('afterbegin', item)
+    itemHook.insertAdjacentHTML('afterbegin', item)
     if(!checkForActiveClass){
+      // document.querySelector('.carousel-indicators li').classList.add('active')
       document.querySelector('.carousel-item').classList.add('active')
-      return hook.insertAdjacentHTML('afterbegin', item)
-    }else{
-      return hook.insertAdjacentHTML('afterbegin', item)
+      // indicatorHook.insertAdjacentHTML('afterbegin', carouselIndicators)
+      // return itemHook.insertAdjacentHTML('afterbegin', item)
     }
   }
   function loadApi(){
@@ -93,15 +98,42 @@ let repository = (function(){
   }
   function loadDetails(pokemon){
     fetch(pokemon).then(function(res){
+      // console.log(res.json())
       return res.json();
     }).then(function(json){
       let details = {
+        id: json.id,
         imgUrl: json.sprites.other.dream_world.front_default,
         name: json.name,
         height: json.height,
-        weight: json.weight
+        weight: json.weight,
+        abilities: json.abilities,
+        png: json.sprites.front_default
       }
-      buildCarouselItems(details)
+      pokemonDetails.push(details);
+      console.log(pokemonDetails)
+      let indicatorHook = document.querySelector('.carousel-indicators')
+      let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${indicatorNum}" class=""><img class="w-100" src="${details.png}" /></li>`
+      indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
+      // buildCarouselItems(details)
+      indicatorNum++;
+      
+      let checkForActiveClass = document.querySelector('.carousel-item');
+      let itemHook = document.querySelector('.carousel-inner')
+      
+      let item = `<div class="carousel-item">
+        <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
+        <div class="carousel-caption d-none d-md-block">
+            <h3>${details.name}</h3>
+            <span>Height:${details.height}</span>
+            <span>Weight:${details.weight}</span>
+        </div>
+      </div>`
+      itemHook.insertAdjacentHTML('beforeend', item)
+      if(!checkForActiveClass){
+        document.querySelector('.carousel-item').classList.add('active')
+      }
+      
     })
   }
   
