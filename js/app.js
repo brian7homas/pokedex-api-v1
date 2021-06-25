@@ -82,6 +82,11 @@ let repository = (function(){
       // return itemHook.insertAdjacentHTML('afterbegin', item)
     }
   }
+  function buildIndicators(details, index){
+    let indicatorHook = document.querySelector('.carousel-indicators')
+    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class=""><img class="w-100" src="${details.png}" /></li>`
+    indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
+  }
   function loadApi(){
     fetch(URL).then(function(res){
       return res.json();
@@ -111,13 +116,9 @@ let repository = (function(){
         png: json.sprites.front_default
       }
       pokemonDetails.push(details);
-      console.log(pokemonDetails)
-      let indicatorHook = document.querySelector('.carousel-indicators')
-      let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${indicatorNum}" class=""><img class="w-100" src="${details.png}" /></li>`
-      indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
-      // buildCarouselItems(details)
+      //builds the img indicators 
+      buildIndicators(details, indicatorNum)
       indicatorNum++;
-      
       let checkForActiveClass = document.querySelector('.carousel-item');
       let itemHook = document.querySelector('.carousel-inner')
       
