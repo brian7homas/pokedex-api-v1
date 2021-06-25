@@ -1,4 +1,14 @@
 // const fetch = require('node-fetch');   
+//   <div class="carousel-item active">
+//     <img class="d-block w-100" src="" alt="First slide">
+//   </div>
+//   <div class="carousel-item">
+//     <img class="d-block w-100" src="" alt="Second slide">
+//   </div>
+//   <div class="carousel-item">
+//     <img class="d-block w-100" src="" alt="Third slide">
+//   </div>
+// </div>
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
   let pokemonDetails = [{"imgUrl": '', "name":'',"height":'',"weight":''}];
@@ -15,24 +25,49 @@ let repository = (function(){
   let animationID = 0;
   //current slide
   let currentIndex = 0;
-  
   function loadPage(){
     let ul = document.querySelector('.pokemon-list');
 
     let filteredList = document.createElement('ul');
     
-    showLoadingMessage('.pokemon-list', 'list')
+    // showLoadingMessage('.pokemon-list', 'list')
     
     ul.insertAdjacentElement('beforebegin', filteredList)
     
     filteredList.classList.add('filtered-list')
     return loadApi();
   }
+  function buildCarosel(){
+    const root = document.querySelector('#root');
+    const carousel = ` <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+    <ol class="carousel-indicators">
+      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner">
+    
+    
+    
+    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>`
+    // root.appendChild(carousel)
+    root.insertAdjacentHTML('beforeend', carousel)
+    loadApi()
+  
+  }
   function loadApi(){
     fetch(URL).then(function(res){
       return res.json();
     }).then(function(json){
-      hideLoadingMessage('list')
+      // hideLoadingMessage('list')
       json.results.forEach(function(item){
         let pokemon = {
           name: item.name,
@@ -52,7 +87,15 @@ let repository = (function(){
         height: json.height,
         weight: json.weight
       }
-      add(details)
+      // add(details)
+      function test(){
+        let item = `<div class="carousel-item">
+        <img class="d-block w-100" src="${details.imgUrl}" alt="First slide">
+      </div>`
+      let hook = document.querySelector('.carousel-inner')
+        hook.insertAdjacentHTML('afterbegin', item)
+      }
+      test()
     })
   }
   function add(item){
@@ -82,6 +125,15 @@ let repository = (function(){
     let listItem = document.createElement('li');
     let listItemImage = document.createElement('img');
     let btn = document.createElement('button')
+    let sliderControls = 
+    `<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>`
     pokemonListNode.appendChild(listItem)
     listItem.appendChild(listItemImage)
     listItem.appendChild(btn);
@@ -89,8 +141,13 @@ let repository = (function(){
     btn.classList.add('pokemon-list__card');
     btn.classList.add('btn');
     listItem.classList.add('pokemon-list__item')
+    listItem.classList.add('carousel-item')
     listItem.classList.add('slides')
     listItemImage.setAttribute('src', `${item.imgUrl}`)
+    listItemImage.classList.add('d-block')
+    listItemImage.classList.add('w-100')
+    
+    pokemonListNode.insertAdjacentHTML('afterend', sliderControls)
     events(btn, item)
     slider()
   }
@@ -299,7 +356,9 @@ let repository = (function(){
   return{
     loadPage : loadPage,
     filterByName : filterByName,
+    loadApi : loadApi,
+    buildCarosel : buildCarosel
   }
 })();
-repository.loadPage()
-repository.filterByName('bulbasaur')
+repository.buildCarosel()
+// repository.filterByName('bulbasaur')
