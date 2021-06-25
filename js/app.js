@@ -64,23 +64,20 @@ let repository = (function(){
   }
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
-    let itemHook = document.querySelector('.carousel-inner')
-    
-    let item = `<div class="carousel-item">
-      <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
-      <div class="carousel-caption d-none d-md-block">
-          <h3>${details.name}</h3>
-          <span>Height:${details.height}</span>
-          <span>Weight:${details.weight}</span>
-      </div>
-    </div>`
-    itemHook.insertAdjacentHTML('afterbegin', item)
-    if(!checkForActiveClass){
-      // document.querySelector('.carousel-indicators li').classList.add('active')
-      document.querySelector('.carousel-item').classList.add('active')
-      // indicatorHook.insertAdjacentHTML('afterbegin', carouselIndicators)
-      // return itemHook.insertAdjacentHTML('afterbegin', item)
-    }
+      let itemHook = document.querySelector('.carousel-inner')
+      
+      let item = `<div class="carousel-item">
+        <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
+        <div class="carousel-caption d-none d-md-block">
+            <h3>${details.name}</h3>
+            <span>Height:${details.height}</span>
+            <span>Weight:${details.weight}</span>
+        </div>
+      </div>`
+      itemHook.insertAdjacentHTML('beforeend', item)
+      if(!checkForActiveClass){
+        document.querySelector('.carousel-item').classList.add('active')
+      }
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
@@ -119,22 +116,7 @@ let repository = (function(){
       //builds the img indicators 
       buildIndicators(details, indicatorNum)
       indicatorNum++;
-      let checkForActiveClass = document.querySelector('.carousel-item');
-      let itemHook = document.querySelector('.carousel-inner')
-      
-      let item = `<div class="carousel-item">
-        <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
-        <div class="carousel-caption d-none d-md-block">
-            <h3>${details.name}</h3>
-            <span>Height:${details.height}</span>
-            <span>Weight:${details.weight}</span>
-        </div>
-      </div>`
-      itemHook.insertAdjacentHTML('beforeend', item)
-      if(!checkForActiveClass){
-        document.querySelector('.carousel-item').classList.add('active')
-      }
-      
+      buildCarouselItems(details)
     })
   }
   
