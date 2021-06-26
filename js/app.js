@@ -78,13 +78,42 @@ let repository = (function(){
       let item = `<div class="carousel-item">
         <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
         <div class="carousel-caption d-none d-sm-none d-md-block">
-            <p class="display-1 top-3 btn btn-info text-center rounded justify-self-center">${name}</p>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
+            ${name}
+          </button>
         </div>
       </div>`
       itemHook.insertAdjacentHTML('beforeend', item)
       if(!checkForActiveClass){
         document.querySelector('.carousel-item').classList.add('active')
       }
+  }
+  function modal(){
+    const root = document.querySelector('#root');
+    const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModal2Label">Modal title</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                          <h5>Popover in a modal</h5>
+                          <p>This <a href="#" role="button" class="btn btn-secondary popover-test" title="Popover title" data-content="Popover body content is set in this attribute." data-toggle="popover" data-placement="right" data-trigger="hover">button</a> triggers a popover on click.</p>
+                          <hr>
+                          <h5>Tooltips in a modal</h5>
+                          <p><a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">This link</a> and <a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">that link</a> have tooltips on hover.</p>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary">Save changes</button>
+                      </div>
+                  </div>
+              </div>
+          </div>`
+    root.insertAdjacentHTML('beforeend', modal);
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
@@ -392,8 +421,10 @@ let repository = (function(){
     loadPage : loadPage,
     filterByName : filterByName,
     loadApi : loadApi,
-    buildCarosel : buildCarosel
+    buildCarosel : buildCarosel,
+    modal : modal
   }
 })();
 repository.buildCarosel()
+repository.modal()
 // repository.filterByName('bulbasaur')
