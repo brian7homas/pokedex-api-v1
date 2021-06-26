@@ -90,6 +90,7 @@ let repository = (function(){
   }
   function modal(){
     const root = document.querySelector('#root');
+    //get info from array
     const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
               <div class="modal-dialog" role="document">
                   <div class="modal-content">
@@ -117,8 +118,6 @@ let repository = (function(){
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
-    // indicatorHook.classList.add('position-absolute')
-    // indicatorHook.classList.add('fixed-top')
     let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
@@ -151,11 +150,34 @@ let repository = (function(){
         png: json.sprites.front_default
       }
       pokemonDetails.push(details);
-      //builds the img indicators 
-      buildIndicators(details, indicatorNum)
-      indicatorNum++;
-      buildCarouselItems(details)
+      validateObject(details)
     })
+  }
+  function validateObject(item){
+    if(!item || item == undefined){
+      document.write('Make sure your passing an object and that it is not empty <br>')
+      document.write('Also make sure your passing [name: string, height: int, type: object]')
+      throw new Error('This add function only takes objects.<br>')
+    }else if(typeof(item) == 'object'){
+      let itemKeys = Object.keys(item);
+      let detailsKeys = Object.keys(pokemonDetails[0]);
+      let listKeys = Object.keys(list[0]);
+      let addToList = true;
+      
+      itemKeys.forEach((key, i) => {
+        if(key != detailsKeys[i]){
+          addToList = false;
+          document.write(`'keys need to match [${listKeys}] <br>`);
+          throw new Error(`'keys need to match [${listKeys}] <br>`)
+        }
+      });
+      if(addToList){
+        pokemonDetails.push(item);
+        buildIndicators(item, indicatorNum)
+        indicatorNum++;
+        buildCarouselItems(item)
+      }
+    }
   }
   
   function filterByName(name){
@@ -182,6 +204,8 @@ let repository = (function(){
   }
   
   
+  
+  /** */
   
   function add(item){
     if(!item || item == undefined){
