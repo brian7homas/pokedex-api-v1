@@ -88,14 +88,14 @@ let repository = (function(){
         document.querySelector('.carousel-item').classList.add('active')
       }
   }
-  function modal(){
+  function modal(details){
     const root = document.querySelector('#root');
     //get info from array
     const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
               <div class="modal-dialog" role="document">
                   <div class="modal-content">
                       <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModal2Label">Modal title</h5>
+                          <h5 class="modal-title" id="exampleModal2Label">${details.name}</h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                           </button>
@@ -176,6 +176,7 @@ let repository = (function(){
         buildIndicators(item, indicatorNum)
         indicatorNum++;
         buildCarouselItems(item)
+        modal(item)
       }
     }
   }
@@ -206,144 +207,6 @@ let repository = (function(){
   
   
   /** */
-  
-  function add(item){
-    if(!item || item == undefined){
-      document.write('Make sure your passing an object and that it is not empty <br>')
-      document.write('Also make sure your passing [name: string, height: int, type: object]')
-      throw new Error('This add function only takes objects.<br>')
-    }else if(typeof(item) == 'object'){
-      let itemKeys = Object.keys(item);
-      let detailsKeys = Object.keys(pokemonDetails[0]);
-      let listKeys = Object.keys(list[0]);
-      let addToList = true;
-      
-      itemKeys.forEach((key, i) => {
-        if(key != detailsKeys[i]){
-          addToList = false;
-          document.write(`'keys need to match [${listKeys}] <br>`);
-          throw new Error(`'keys need to match [${listKeys}] <br>`)
-        }
-      });
-      if(addToList){
-        pokemonDetails.push(item);
-      }
-    }
-    // make request
-    let pokemonListNode = document.querySelector('.pokemon-list');
-    let listItem = document.createElement('li');
-    let listItemImage = document.createElement('img');
-    let btn = document.createElement('button')
-    let sliderControls = 
-    `<a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-      </a>
-      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>`
-    pokemonListNode.appendChild(listItem)
-    listItem.appendChild(listItemImage)
-    listItem.appendChild(btn);
-    btn.innerText = `${item.name} details`;
-    btn.classList.add('pokemon-list__card');
-    btn.classList.add('btn');
-    listItem.classList.add('pokemon-list__item')
-    listItem.classList.add('carousel-item')
-    listItem.classList.add('slides')
-    listItemImage.setAttribute('src', `${item.imgUrl}`)
-    listItemImage.classList.add('d-block')
-    listItemImage.classList.add('w-100')
-    
-    pokemonListNode.insertAdjacentHTML('afterend', sliderControls)
-    events(btn, item)
-    slider()
-  }
-  function slider(){
-    // const slider = document.querySelector('.pokemon-list');
-    const slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
-
-    slides.forEach((slide, index) => {
-      const slideImage = slide.querySelector('img')
-      // disable default image drag
-      slideImage.addEventListener('dragstart', (e) => e.preventDefault())
-      // touch events
-      slide.addEventListener('touchstart', touchStart(index))
-      slide.addEventListener('touchend', touchEnd)
-      slide.addEventListener('touchmove', touchMove)
-      // mouse events
-      slide.addEventListener('mousedown', touchStart(index))
-      slide.addEventListener('mouseup', touchEnd)
-      slide.addEventListener('mousemove', touchMove)
-      slide.addEventListener('mouseleave', touchEnd)
-    })
-    
-  }
-  function getPositionX(event) {
-    return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
-  }
-  
-  function showLoadingMessage(selector, id){    
-    let el = document.querySelector(selector);
-    return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
-  }
-  function hideLoadingMessage(id){
-    let el = document.querySelector(`#${id}`);
-    return el.remove();
-  }
-  function showDetails(pokemon){
-    return createModal(pokemon)
-  }
-  
-  // use a HOF so we have index in a closure
-  function touchStart(index) {
-    return function (event) {
-      let slider = document.querySelector('.pokemon-list')
-      currentIndex = index
-      startPos = getPositionX(event)
-      isDragging = true
-      animationID = requestAnimationFrame(animation)
-      slider.classList.add('grabbing')
-    }
-  }
-  
-  function touchMove(event) {
-    if (isDragging) {
-      const currentPosition = getPositionX(event)
-      currentTranslate = prevTranslate + currentPosition - startPos
-    }
-  }
-  function touchEnd() {
-    let slider = document.querySelector('.pokemon-list')
-    slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
-    cancelAnimationFrame(animationID)
-    isDragging = false
-    const movedBy = currentTranslate - prevTranslate
-  
-    // if moved enough negative then snap to next slide if there is one
-    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1
-  
-    // if moved enough positive then snap to previous slide if there is one
-    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1
-  
-    setPositionByIndex()
-  
-    slider.classList.remove('grabbing')
-  }
-  function animation() {
-    setSliderPosition()
-    if (isDragging) requestAnimationFrame(animation)
-  }
-  function setPositionByIndex() {
-    currentTranslate = currentIndex * -window.innerWidth
-    prevTranslate = currentTranslate
-    setSliderPosition()
-  }
-  function setSliderPosition() {
-    let slider = document.querySelector('.pokemon-list')
-    slider.style.transform = `translateX(${currentTranslate}px)`
-  }
   
   
   
@@ -450,5 +313,5 @@ let repository = (function(){
   }
 })();
 repository.buildCarosel()
-repository.modal()
+// repository.modal()
 // repository.filterByName('bulbasaur')
