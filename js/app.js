@@ -68,13 +68,7 @@ let repository = (function(){
     let checkForActiveClass = document.querySelector('.carousel-item');
       let itemHook = document.querySelector('.carousel-inner')
       let name = details.name;
-      function capitalize(str){
-        String(str)
-        let lower = str.toLowerCase();
-        console.log(typeof(str))
-        name = str.charAt(0).toUpperCase() + lower.slice(1)
-      }
-      capitalize(name)
+      name = capitalize(name)
       let item = `<div class="carousel-item">
         <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
         <div class="carousel-caption d-xs-block mb-5">
@@ -179,6 +173,12 @@ let repository = (function(){
         modal(item)
       }
     }
+  }
+  function capitalize(str){
+    String(str)
+    let lower = str.toLowerCase();
+    console.log(typeof(str))
+    return str.charAt(0).toUpperCase() + lower.slice(1)
   }
   
   function filterByName(name){
