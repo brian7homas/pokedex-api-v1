@@ -17,6 +17,26 @@ html,body{
   background-color: var(--main-blue);
   color:white;
 }
+/* #root{
+  min-height:100vh;
+} */
+.h-100{
+  min-height: 100vh;
+  max-height: 100vh;
+}
+/* .mw-100{
+  max-width: 100%;
+} */
+.carousel-item img{
+  max-width: 40vw;
+  margin:0 auto;
+}
+.modal-backdrop{
+  z-index: 1;
+}
+h3{
+  color:var(--main-white);
+}
 .slider{
   /*height:100vh;
   */display:inline-flex;
