@@ -85,11 +85,13 @@ let repository = (function(){
   function modal(details){
     const root = document.querySelector('#root');
     //get info from array
+    let name = capitalize(details.name)
+    
     const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
               <div class="modal-dialog" role="document">
                   <div class="modal-content">
                       <div class="modal-header">
-                          <h5 class="modal-title" id="exampleModal2Label">${details.name}</h5>
+                          <h5 class="modal-title bg-dark" id="exampleModal2Label">${name}</h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                           </button>
@@ -109,6 +111,8 @@ let repository = (function(){
               </div>
           </div>`
     root.insertAdjacentHTML('beforeend', modal);
+    let modalContainer = document.querySelector('.modal-content')
+    modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')

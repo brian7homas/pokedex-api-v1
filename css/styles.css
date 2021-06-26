@@ -37,6 +37,9 @@ html,body{
 h3{
   color:var(--main-white);
 }
+.modal-content{
+  background-repeat: no-repeat;
+}
 .slider{
   /*height:100vh;
   */display:inline-flex;
