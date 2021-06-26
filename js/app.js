@@ -40,23 +40,26 @@ let repository = (function(){
   }
   function buildCarosel(){
     const root = document.querySelector('#root');
-    const carousel = ` <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-    <ol class="carousel-indicators">
-      
-    </ol>
-    <div class="carousel-inner">
-    
-    
-    
-    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
-  </div>`
+    const carousel = ` 
+    <div class="container">
+      <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
+        <ol class="carousel-indicators">
+          
+        </ol>
+        <div class="carousel-inner">
+        
+        
+        
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>`
     // root.appendChild(carousel)
     root.insertAdjacentHTML('beforeend', carousel)
     loadApi()
@@ -74,10 +77,8 @@ let repository = (function(){
       capitalize(name)
       let item = `<div class="carousel-item">
         <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
-        <div class="carousel-caption d-none d-md-block align-text-top">
-            <h3 class="display-1">${name}</h3>
-            <span class="h2 m-2">Height:${details.height}</span>
-            <span class="h2">Weight:${details.weight}</span>
+        <div class="carousel-caption d-none d-sm-none d-md-block">
+            <p class="display-1 top-3 btn btn-info text-center rounded justify-self-center">${name}</p>
         </div>
       </div>`
       itemHook.insertAdjacentHTML('beforeend', item)
@@ -87,8 +88,8 @@ let repository = (function(){
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
-    indicatorHook.classList.add('position-absolute')
-    indicatorHook.classList.add('fixed-top')
+    // indicatorHook.classList.add('position-absolute')
+    // indicatorHook.classList.add('fixed-top')
     let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class=""><img class="w-100" src="${details.png}" /></li>`
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
