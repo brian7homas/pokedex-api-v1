@@ -52,7 +52,7 @@ let repository = (function(){
         
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="sr-only">Previous</span>
+          <span class="sr-only">Prev</span>
         </a>
         <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
           <span class="carousel-control-next-icon" aria-hidden="true"></span>
@@ -77,7 +77,7 @@ let repository = (function(){
       capitalize(name)
       let item = `<div class="carousel-item">
         <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
-        <div class="carousel-caption d-none d-sm-none d-md-block">
+        <div class="carousel-caption d-xs-block mb-5">
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
             ${name}
           </button>
@@ -119,7 +119,7 @@ let repository = (function(){
     let indicatorHook = document.querySelector('.carousel-indicators')
     // indicatorHook.classList.add('position-absolute')
     // indicatorHook.classList.add('fixed-top')
-    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class=""><img class="w-100" src="${details.png}" /></li>`
+    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
   function loadApi(){
