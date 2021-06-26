@@ -14,17 +14,6 @@ let repository = (function(){
   let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
-  //dragging active
-  let isDragging = false;
-  //where dragging starts
-  let startPos = 0;
-  //value for direction
-  let currentTranslate = 0;
-  let prevTranslate = 0;
-  //animation will use requestanimation frame
-  let animationID = 0;
-  //current slide
-  let currentIndex = 0;
   let indicatorNum = 0;
   function loadPage(){
     let ul = document.querySelector('.pokemon-list');
@@ -64,15 +53,28 @@ let repository = (function(){
     root.insertAdjacentHTML('beforeend', carousel)
     loadApi()
   }
+  function getInfo(){
+    let active = document.querySelector('div.active div button').innerText;
+    console.log(active)
+    for(var i = 0; i < pokemonDetails.length; i++){
+      let listName = capitalize(pokemonDetails[i].name)
+      if(listName === active){
+        console.log(listName)
+        let result = pokemonDetails[i];
+        return modal(result)
+      }
+    }
+  }
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
       let itemHook = document.querySelector('.carousel-inner')
       let name = details.name;
+      let img = details.imgUrl;
       name = capitalize(name)
       let item = `<div class="carousel-item">
-        <img class="d-block w-100 h-100" src="${details.imgUrl}" alt="First slide">
+        <img class="d-block w-100 h-100" src="${img}" alt="${name} slide">
         <div class="carousel-caption d-xs-block mb-5">
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
             ${name}
           </button>
         </div>
@@ -81,17 +83,22 @@ let repository = (function(){
       if(!checkForActiveClass){
         document.querySelector('.carousel-item').classList.add('active')
       }
+      
+      // console.log(img)
+      
   }
-  function modal(details){
+  function modal(result){
+    console.log(result.name)
+    let name = capitalize(result.name)
     const root = document.querySelector('#root');
     //get info from array
-    let name = capitalize(details.name)
+    // name = capitalize(details.name)
     
     const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
               <div class="modal-dialog" role="document">
                   <div class="modal-content">
                       <div class="modal-header">
-                          <h5 class="modal-title bg-dark" id="exampleModal2Label">${name}</h5>
+                          <h5 class="modal-title bg-dark" id="exampleModal2Label"></h5>
                           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                           </button>
@@ -110,9 +117,11 @@ let repository = (function(){
                   </div>
               </div>
           </div>`
-    root.insertAdjacentHTML('beforeend', modal);
-    let modalContainer = document.querySelector('.modal-content')
-    modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
+      root.insertAdjacentHTML('beforeend', modal);
+      let modalTitle = document.querySelector('.modal-title')
+      let modalContainer = document.querySelector('.modal-content')
+      modalTitle.innerText = name;
+      modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`)
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
@@ -147,7 +156,7 @@ let repository = (function(){
         abilities: json.abilities,
         png: json.sprites.front_default
       }
-      pokemonDetails.push(details);
+      // pokemonDetails.push(details);
       validateObject(details)
     })
   }
@@ -174,14 +183,13 @@ let repository = (function(){
         buildIndicators(item, indicatorNum)
         indicatorNum++;
         buildCarouselItems(item)
-        modal(item)
+        // modal(item)
       }
     }
   }
   function capitalize(str){
     String(str)
     let lower = str.toLowerCase();
-    console.log(typeof(str))
     return str.charAt(0).toUpperCase() + lower.slice(1)
   }
   
@@ -307,13 +315,14 @@ let repository = (function(){
   
   
   
-  
   return{
     loadPage : loadPage,
     filterByName : filterByName,
     loadApi : loadApi,
     buildCarosel : buildCarosel,
-    modal : modal
+    modal : modal,
+    getInfo : getInfo
+    
   }
 })();
 repository.buildCarosel()
