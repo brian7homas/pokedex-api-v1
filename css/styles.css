@@ -183,6 +183,26 @@ h3{
     max-height:100vh;
     max-width:100vw;
   }
+  .carousel-indicators{
+    padding-right: 0;
+    padding-left: 0;
+    transition: transform .5s ease-out;
+    -webkit-transition: transform .5s ease-out;
+    -moz-transition: transform .5s ease-out;
+    -ms-transition: transform .5s ease-out;
+    -o-transition: transform .5s ease-out;
+  }
+  .carousel-indicator:hover{
+    position:relative;
+    z-index: -1;
+    padding:0;
+    margin:0;
+    transform: scale(6.5) translateY(-.7rem) ;
+    -webkit-transform: scale(6.5) translateY(-.7rem) ;
+    -moz-transform: scale(6.5) translateY(-.7rem) ;
+    -ms-transform: scale(6.5) translateY(-.7rem) ;
+    -o-transform: scale(6.5) translateY(-.7rem) ;
+  }
 }
 
 @media only screen and (max-width:600px){
@@ -202,7 +222,18 @@ h3{
     grid-template-columns: 1fr 1fr;
     padding:2em 0;
   }
-  
+  .sr-only{
+    display:none;
+  }
+  .carousel-indicators{
+    /* overflow:scroll; */
+    margin: 0 0 1rem 0;
+    padding-right: 15%;
+    padding-left: 15%;
+  }
+  .carousel-caption{
+    padding-bottom:4rem;
+  }
 }
 
 @media only screen and (max-width:400px){
@@ -235,6 +266,7 @@ h3{
   .slides{
     justify-content: flex-start;
   }
+
 }
 
 @media only screen and (max-width: 1000px)and (orientation: landscape){
