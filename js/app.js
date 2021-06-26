@@ -11,7 +11,7 @@
 // </div>
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
-  let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":''}];
+  let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":'',"types":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   let indicatorNum = 0;
@@ -60,8 +60,14 @@ let repository = (function(){
       let listName = capitalize(pokemonDetails[i].name)
       if(listName === active){
         console.log(listName)
+        let currentModal = document.querySelector('.modal')
+        if(currentModal){
+          //removes the modal if there is one in the DOM
+          console.log('removing modal')
+          document.querySelector('.modal').remove()
+        }
         let result = pokemonDetails[i];
-        return modal(result)
+        return createModal(result)
       }
     }
   }
@@ -94,30 +100,6 @@ let repository = (function(){
     //get info from array
     // name = capitalize(details.name)
     
-    const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title bg-dark" id="exampleModal2Label"></h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                          <h5>Popover in a modal</h5>
-                          <p>This <a href="#" role="button" class="btn btn-secondary popover-test" title="Popover title" data-content="Popover body content is set in this attribute." data-toggle="popover" data-placement="right" data-trigger="hover">button</a> triggers a popover on click.</p>
-                          <hr>
-                          <h5>Tooltips in a modal</h5>
-                          <p><a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">This link</a> and <a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">that link</a> have tooltips on hover.</p>
-                      </div>
-                      <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          <button type="button" class="btn btn-primary">Save changes</button>
-                      </div>
-                  </div>
-              </div>
-          </div>`
-      root.insertAdjacentHTML('beforeend', modal);
       let modalTitle = document.querySelector('.modal-title')
       let modalContainer = document.querySelector('.modal-content')
       modalTitle.innerText = name;
@@ -154,7 +136,8 @@ let repository = (function(){
         height: json.height,
         weight: json.weight,
         abilities: json.abilities,
-        png: json.sprites.front_default
+        png: json.sprites.front_default,
+        types: json.types
       }
       // pokemonDetails.push(details);
       validateObject(details)
@@ -231,86 +214,46 @@ let repository = (function(){
     //!FOR QUOKKA TESTING
     // return showDetails(pokemon.url);
   }
-  // MODAL SPECIFIC EVENTS
-  function modalEvents(){
-    let modal = document.querySelector('.modal');
-    let closeBtn = document.querySelector('.modal__close');
-    window.addEventListener('keydown',(e)=>{
-      if(e.key === 'Escape'){
-        return closeModal();
-      }
-    })
-    modal.addEventListener('click', function(e){
-      let target = e.target
-      if(target === modal){
-        return closeModal();
-      }
-    })
-    closeBtn.addEventListener('click', function(){
-      return closeModal();
-    })
-  }
   function createModal(details){
-    let mainContainer = document.querySelector('.container');
-    let currentModal = document.querySelector('.modal')
-    if(currentModal){
-      //removes the modal if there is one in the DOM
-      document.querySelector('.modal').remove()
-    }else{
-      let modal = document.createElement('div');
-      mainContainer.insertAdjacentElement('afterend', modal);
-      modal.classList.add('modal--is-visible');
-      modal.classList.add('modal');
-      showLoadingMessage('.modal', 'modal-container');
-      setTimeout(function(){
-        hideLoadingMessage('modal-container')
-        let modalCloseBtn = document.createElement('span');
-        let modalContainer = document.createElement('div');
-        let modalHeadline = document.createElement('h1');
-        let modalImg = document.createElement('img');
-        let modalCopy = document.createElement('ul');
+    console.log(details)
+      const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title bg-dark" id="exampleModal2Label">${details.name}</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                      </button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <h5>Abilities</h5>
+                                      <ul>
+                                        <li>${details.abilities[0].ability.name}</li>
+                                        <li>${details.abilities[1].ability.name}</li>
+                                      </ul>
+                                      <hr>
+                                      <h5>Tooltips in a modal</h5>
+                                      <p><a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">This link</a> and <a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">that link</a> have tooltips on hover.</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                      <button type="button" class="btn btn-primary">Save changes</button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>`
+        root.insertAdjacentHTML('beforeend', modal);
+        let modalContainer = document.querySelector('.modal-content')
         modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
-        
-        
-        modal.append(modalContainer);
-        modalContainer.appendChild(modalCloseBtn);
-        modalContainer.classList.add('modal__container');
-        modalCloseBtn.classList.add('modal__close');
-        modalContainer.appendChild(modalHeadline);
-        modalContainer.appendChild(modalImg);
-        modalContainer.appendChild(modalCopy);
-        
-        //add classes to new elements
-        modalHeadline.classList.add('modal__headline');
-        modalImg.classList.add('modal__img');
-        modalCopy.classList.add('modal__copy');
-        
-        
-        
-        
-        modalCloseBtn.innerText = `Close`;
-        modalHeadline.innerText = `Name:  ${details.name}`;
-        modalCopy.innerHTML = `
-            <li>Weight:  ${details.weight}</li>
-            <li>Height:  ${details.height}</li>
-          `;
-        modalImg.setAttribute('src', `${details.imgUrl}`)
-        
-        modalEvents()
-        }, 2000)
-      
-      
-        
-        
-      //add the text and img to the modal
-      
-    }
-    
-    
+        // modalEvents()
+      // setTimeout(function(){
+      //   modalEvents()
+      //   }, 2000)
   }
   function closeModal(){
-    document.querySelector('.modal').classList.remove('modal--is-visible');
-    return document.querySelector('.modal').remove();
+    let modal = document.querySelector('.modal');
+    console.log(modal)
+    return modal.remove();
   }
   
   
