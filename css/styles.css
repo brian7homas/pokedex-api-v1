@@ -21,8 +21,8 @@ html,body{
   min-height:100vh;
 } */
 .h-100{
-  min-height: 100vh;
-  max-height: 100vh;
+  /* min-height: 100vh; */
+  min-height: 90vh;
 }
 /* .mw-100{
   max-width: 100%;
@@ -42,6 +42,31 @@ h3{
   background-size: cover;
   background-position: center;
 }
+.nav-link{
+  color:var(--main-white);
+}
+.carousel-indicators{
+  padding-right: 0;
+  padding-left: 0;
+  transition: all .5s ease-out;
+  -webkit-transition: all .5s ease-out;
+  -moz-transition: all .5s ease-out;
+  -ms-transition: all .5s ease-out;
+  -o-transition: all .5s ease-out;
+}
+.carousel-indicator:hover{
+  position:relative;
+  z-index: -1;
+  padding:0;
+  margin:0;
+  transform: scale(3.5) translateY(-.7rem) ;
+  -webkit-transform: scale(3.5) translateY(-.7rem) ;
+  -moz-transform: scale(3.5) translateY(-.7rem) ;
+  -ms-transform: scale(3.5) translateY(-.7rem) ;
+  -o-transform: scale(3.5) translateY(-.7rem) ;
+}
+
+
 .slider{
   /*height:100vh;
   */display:inline-flex;
@@ -188,26 +213,6 @@ h3{
     max-height:100vh;
     max-width:100vw;
   }
-  .carousel-indicators{
-    padding-right: 0;
-    padding-left: 0;
-    transition: transform .5s ease-out;
-    -webkit-transition: transform .5s ease-out;
-    -moz-transition: transform .5s ease-out;
-    -ms-transition: transform .5s ease-out;
-    -o-transition: transform .5s ease-out;
-  }
-  .carousel-indicator:hover{
-    position:relative;
-    z-index: -1;
-    padding:0;
-    margin:0;
-    transform: scale(6.5) translateY(-.7rem) ;
-    -webkit-transform: scale(6.5) translateY(-.7rem) ;
-    -moz-transform: scale(6.5) translateY(-.7rem) ;
-    -ms-transform: scale(6.5) translateY(-.7rem) ;
-    -o-transform: scale(6.5) translateY(-.7rem) ;
-  }
 }
 
 @media only screen and (max-width:600px){
@@ -239,6 +244,13 @@ h3{
   .carousel-caption{
     padding-bottom:4rem;
   }
+  .carousel-indicator:hover{
+    transform: scale(6.5) translateY(-.7rem) ;
+    -webkit-transform: scale(6.5) translateY(-.7rem) ;
+    -moz-transform: scale(6.5) translateY(-.7rem) ;
+    -ms-transform: scale(6.5) translateY(-.7rem) ;
+    -o-transform: scale(6.5) translateY(-.7rem) ;
+}
 }
 
 @media only screen and (max-width:400px){
