@@ -4,13 +4,15 @@ let repository = (function(){
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   let indicatorNum = 0;
-  
+  let previousValue = document.querySelector("#search").value;
+  let isWaiting = false;
   
   // Main functions
   
   //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
   //THEN CALLS THE loadApi() FUNCTION
   function buildCarosel(){
+    showLoadingMessage('body', 'body')
     const root = document.querySelector('#root');
     const carousel = ` 
     <div class="container">
@@ -39,6 +41,7 @@ let repository = (function(){
     </div>`
     // root.appendChild(carousel)
     root.insertAdjacentHTML('beforeend', carousel)
+    showLoadingMessage('.carousel-inner', 'carousel-inner-loader')
     loadApi()
   }
   
@@ -46,6 +49,7 @@ let repository = (function(){
   //THEN CALLS THE loadDetails() WITH THE item.url AS AN ARG
   function loadApi(){
     fetch(URL).then(function(res){
+      hideLoadingMessage('.body')
       return res.json();
     }).then(function(json){
       json.results.forEach(function(item){
@@ -96,6 +100,7 @@ let repository = (function(){
         }
       });
       if(addToList){
+        hideLoadingMessage('.carousel-inner-loader')
         pokemonDetails.push(item);
         //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
         //indicatorNum IS INITIALIZED ON LINE 6
@@ -114,7 +119,7 @@ let repository = (function(){
     let name = details.name;
     let img = details.imgUrl;
     name = capitalize(name)
-    showLoadingMessage('.main-img', 'main-img')
+    // showLoadingMessage('.main-img')
     let item = `<div class="carousel-item">
       <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
       <div class="carousel-caption d-xs-block mb-5">
@@ -125,7 +130,6 @@ let repository = (function(){
     </div>`
     
     itemHook.insertAdjacentHTML('beforeend', item)
-    hideLoadingMessage('main-img')
     if(!checkForActiveClass){
       //IF THERE IS NO ACTIVE CLASS -- SET ONE
       document.querySelector('.carousel-item').classList.add('active')
@@ -135,10 +139,11 @@ let repository = (function(){
   //THIS FUNCTION BUILDS THE SLIDE INDICATORS
   //IT USES details ARRAY TO ADD THE IMG OF THE POKEMON
   function buildIndicators(details, index){
+    // showLoadingMessage('.carousel-indicators', 'indicators')
     let indicatorHook = document.querySelector('.carousel-indicators')
-    showLoadingMessage('.carousel-indicators', 'indicator-loader')
+    // hideLoadingMessage('indicators')
     let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`;
-    hideLoadingMessage('indicator-loader')
+    
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
   
@@ -146,15 +151,20 @@ let repository = (function(){
   // Utility functions -- functions 
   function showLoadingMessage(selector, id){
     // create the element
-    let el = document.createElement('h1');
+    let el = document.createElement('span');
+    el.classList.add(`${id}`)
     // set it's inside text
-    el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
+    el.innerHTML = `<h1 id="${id}">Loading</h1>`;
     //place it
-    document.querySelector('.carousel-inner').append( el)
+    document.querySelector(`${selector}`).insertAdjacentElement('beforeend', el)
+    // document.querySelector('.container').insertAdjacentElement('beforeend', el)
   }
-  function hideLoadingMessage(id){    
-    let el = document.getElementById(id);
-    return el.remove();
+  function hideLoadingMessage(id){
+    let el = document.querySelectorAll(`${id}`);
+    
+    el.forEach((e)=>{
+      e.remove()
+    })
   }
   function getInfo(search = null){
     // if the search item is clicked
@@ -204,33 +214,59 @@ let repository = (function(){
     let lower = str.toLowerCase();
     return str.charAt(0).toUpperCase() + lower.slice(1)
   }
+  // LIVE SEARCH
   function findByName(){
+    // initialize timer, get the input value, filter through the Array
+    let timer
+    // GET WHAT IS BEING TYPED IN
     let value = document.querySelector("#search").value
-    let searchResults = pokemonDetails.filter(pokemon=>pokemon.name === value)
-    console.log(searchResults)
-    if(searchResults.length == 0){
-      console.log('error')
-      let searchHook = document.querySelector('#search-result');
-      searchHook.innerText = '';
-      let result = `<span>Sorry, there are no pokemon by that name.</span>`
-      searchHook.insertAdjacentHTML('beforeend', result)
-    }else{
-      let searchHook = document.querySelector('#search-result');
-      searchHook.innerText = searchResults[0].name
-      // let result = document.createElement('img')
-      let result = `
-        <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo('${value}')" id="search-result" class="nav-link active" href="#">
-          <div class="search-display">
-            <img class="search-display__img" src="${searchResults[0].imgUrl}" />
-          </div>
-        </a>
-      `
-      searchHook.insertAdjacentHTML('beforeend', result)
-      console.log(searchResults)
+    
+    let searchHook = document.querySelector('#search-result');
+    // COMPARE PREV VALUE TO TYPED VALUE
+    if(previousValue != value){
+      clearTimeout(timer)
+      // IF THE VALUE IS NOT EMPTY
+      if(value != ''){
+        // WILL SHOW UNTIL THE SEARCHHOOK'S INNERTEXT IS OVERRIDDEN
+        if(!isWaiting){
+          searchHook.innerText = `loading..`
+        }
+        
+        // ALLOWS TIME TO TYPE BEFORE FILTERING THE ARRAY FOR THE NAME VALUE
+        timer = setTimeout(()=>{
+          let value = document.querySelector("#search").value.trim()
+          let searchResults = pokemonDetails.filter(pokemon=>{
+            if(pokemon.name === value){
+              console.log(pokemon)
+              return pokemon;
+              }
+            })
+          let searchHook = document.querySelector('#search-result');
+          
+          // CHECK FOR ANY RESULTS IN THE CALLBACK
+          if(searchResults.length != 0){
+            searchHook.innerText = searchResults[0].name
+            let result = `
+              <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo('${value}')" id="search-result" class="nav-link active" href="#">
+                <div class="search-display">
+                  <img class="search-display__img" src="${searchResults[0].imgUrl}" />
+                </div>
+              </a>
+            `
+            return searchHook.insertAdjacentHTML('beforeend', result)  
+          }else{
+            console.log('error')
+            let searchHook = document.querySelector('#search-result');
+            searchHook.innerText = '';
+            let result = `<span>No results found. Please check your spelling.</span>`
+            searchHook.insertAdjacentHTML('beforeend', result)
+          }
+        },450)
+      }
+      // SET PREV VALUE TO WHAT THE TYPED VALUE IS
+      previousValue = value;
     }
   }
-  
-  
   // Modal functions 
   function createModal(details){
     let name = capitalize(details.name)
