@@ -81,14 +81,13 @@ let repository = (function(){
     }else if(typeof(item) == 'object'){
       let itemKeys = Object.keys(item);
       let detailsKeys = Object.keys(pokemonDetails[0]);
-      let listKeys = Object.keys(list[0]);
       let addToList = true;
       
       itemKeys.forEach((key, i) => {
         if(key != detailsKeys[i]){
           addToList = false;
-          document.write(`'keys need to match [${listKeys}] <br>`);
-          throw new Error(`'keys need to match [${listKeys}] <br>`)
+          document.write(`'keys need to match [${detailsKeys}] <br>`);
+          throw new Error(`'keys need to match [${detailsKeys}] <br>`)
         }
       });
       if(addToList){
