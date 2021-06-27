@@ -17,6 +17,65 @@ html,body{
   background-color: var(--main-blue);
   color:white;
 }
+/* #root{
+  min-height:100vh;
+} */
+.h-100{
+  min-height: 90vh;
+  min-height: 90vh;
+}
+/* .mw-100{
+  max-width: 100%;
+} */
+.carousel-item img{
+  max-width: 40vw;
+  margin:0 auto;
+}
+.modal-backdrop{
+  z-index: 1;
+}
+h3{
+  color:var(--main-white);
+}
+.modal-content{
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+.nav-link{
+  color:var(--main-white);
+}
+.carousel-indicators{
+  padding-right: 0;
+  padding-left: 0;
+  transition: all .5s ease-out;
+  -webkit-transition: all .5s ease-out;
+  -moz-transition: all .5s ease-out;
+  -ms-transition: all .5s ease-out;
+  -o-transition: all .5s ease-out;
+}
+.carousel-indicator:hover{
+  position:relative;
+  z-index: -1;
+  padding:0;
+  margin:0;
+  transform: scale(3.5) translateY(-.7rem) ;
+  -webkit-transform: scale(3.5) translateY(-.7rem) ;
+  -moz-transform: scale(3.5) translateY(-.7rem) ;
+  -ms-transform: scale(3.5) translateY(-.7rem) ;
+  -o-transform: scale(3.5) translateY(-.7rem) ;
+}
+nav{
+  padding:2em 3em;
+  background-color: transparent;
+  z-index: 100;
+}
+.search-display{
+  display:inline;
+}
+.search-display__img{
+  max-width: 10%;
+}
 .slider{
   /*height:100vh;
   */display:inline-flex;
@@ -182,7 +241,25 @@ html,body{
     grid-template-columns: 1fr 1fr;
     padding:2em 0;
   }
-  
+  .sr-only{
+    display:none;
+  }
+  .carousel-indicators{
+    /* overflow:scroll; */
+    margin: 0 0 1rem 0;
+    padding-right: 15%;
+    padding-left: 15%;
+  }
+  .carousel-caption{
+    padding-bottom:4rem;
+  }
+  .carousel-indicator:hover{
+    transform: scale(6.5) translateY(-.7rem) ;
+    -webkit-transform: scale(6.5) translateY(-.7rem) ;
+    -moz-transform: scale(6.5) translateY(-.7rem) ;
+    -ms-transform: scale(6.5) translateY(-.7rem) ;
+    -o-transform: scale(6.5) translateY(-.7rem) ;
+}
 }
 
 @media only screen and (max-width:400px){
@@ -215,6 +292,7 @@ html,body{
   .slides{
     justify-content: flex-start;
   }
+
 }
 
 @media only screen and (max-width: 1000px)and (orientation: landscape){

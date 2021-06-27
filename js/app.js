@@ -1,61 +1,89 @@
 // const fetch = require('node-fetch');   
 let repository = (function(){
-  let list = [{"name":'',"url": ''}];
-  let pokemonDetails = [{"imgUrl": '', "name":'',"height":'',"weight":''}];
+  let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":'',"types":''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
-  //dragging active
-  let isDragging = false;
-  //where dragging starts
-  let startPos = 0;
-  //value for direction
-  let currentTranslate = 0;
-  let prevTranslate = 0;
-  //animation will use requestanimation frame
-  let animationID = 0;
-  //current slide
-  let currentIndex = 0;
+  let indicatorNum = 0;
+  let previousValue = document.querySelector("#search").value;
+  let isWaiting = false;
   
-  function loadPage(){
-    let ul = document.querySelector('.pokemon-list');
-
-    let filteredList = document.createElement('ul');
-    
-    showLoadingMessage('.pokemon-list', 'list')
-    
-    ul.insertAdjacentElement('beforebegin', filteredList)
-    
-    filteredList.classList.add('filtered-list')
-    return loadApi();
+  // Main functions
+  
+  //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
+  //THEN CALLS THE loadApi() FUNCTION
+  function buildCarousel(){
+    showLoadingMessage('body', 'body')
+    const root = document.querySelector('#root');
+    const carousel = ` 
+    <div class="container">
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Github</a>
+        </li>
+      </ul>
+      <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
+        <ol class="carousel-indicators">
+          
+        </ol>
+        <div class="carousel-inner">
+        
+        
+        
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Prev</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+      </div>
+    </div>`
+    // root.appendChild(carousel)
+    root.insertAdjacentHTML('beforeend', carousel)
+    showLoadingMessage('.carousel-inner', 'carousel-inner-loader')
+    loadApi()
   }
+  
+  //THIS FUNCTION LOADS THE URL
+  //THEN CALLS THE loadDetails() WITH THE item.url AS AN ARG
   function loadApi(){
     fetch(URL).then(function(res){
+      hideLoadingMessage('.body')
       return res.json();
     }).then(function(json){
-      hideLoadingMessage('list')
       json.results.forEach(function(item){
-        let pokemon = {
-          name: item.name,
-          url: item.url
-        }
         loadDetails(item.url)
       })
     })
   }
+  
+  //THIS FUNCTION INITIALIZES DETAILS OBJECT
+  //THEN CALLS THE validateObject() FUNCTION WITH THE details OBJECT AS AN ARG
   function loadDetails(pokemon){
     fetch(pokemon).then(function(res){
+      // console.log(res.json())
       return res.json();
     }).then(function(json){
       let details = {
+        id: json.id,
         imgUrl: json.sprites.other.dream_world.front_default,
         name: json.name,
         height: json.height,
-        weight: json.weight
+        weight: json.weight,
+        abilities: json.abilities,
+        png: json.sprites.front_default,
+        types: json.types
       }
-      add(details)
+      validateObject(details)
     })
   }
-  function add(item){
+  
+  //THIS FUNCTION TAKES THE details OBJECT
+  //THEN COMPARES pokemonDetails OBJECT KEYS TO THE item KEYS
+  //IF THEY COMPARE THEY ARE ADDED TO THE pokemonDetails ARRAY
+  //THEN buildIndicators() and buildCarouselItems() ARE RUN
+  function validateObject(item){
     if(!item || item == undefined){
       document.write('Make sure your passing an object and that it is not empty <br>')
       document.write('Also make sure your passing [name: string, height: int, type: object]')
@@ -63,243 +91,246 @@ let repository = (function(){
     }else if(typeof(item) == 'object'){
       let itemKeys = Object.keys(item);
       let detailsKeys = Object.keys(pokemonDetails[0]);
-      let listKeys = Object.keys(list[0]);
       let addToList = true;
-      
       itemKeys.forEach((key, i) => {
         if(key != detailsKeys[i]){
           addToList = false;
-          document.write(`'keys need to match [${listKeys}] <br>`);
-          throw new Error(`'keys need to match [${listKeys}] <br>`)
+          document.write(`'keys need to match [${detailsKeys}] <br>`);
+          throw new Error(`'keys need to match [${detailsKeys}] <br>`)
         }
       });
       if(addToList){
+        hideLoadingMessage('.carousel-inner-loader')
         pokemonDetails.push(item);
+        //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
+        //indicatorNum IS INITIALIZED ON LINE 6
+        buildIndicators(item, indicatorNum)
+        indicatorNum++;
+        buildCarouselItems(item)
       }
     }
-    // make request
-    let pokemonListNode = document.querySelector('.pokemon-list');
-    let listItem = document.createElement('li');
-    let listItemImage = document.createElement('img');
-    let btn = document.createElement('button')
-    pokemonListNode.appendChild(listItem)
-    listItem.appendChild(listItemImage)
-    listItem.appendChild(btn);
-    btn.innerText = `${item.name} details`;
-    btn.classList.add('pokemon-list__card');
-    btn.classList.add('btn');
-    listItem.classList.add('pokemon-list__item')
-    listItem.classList.add('slides')
-    listItemImage.setAttribute('src', `${item.imgUrl}`)
-    events(btn, item)
-    slider()
   }
-  function slider(){
-    // const slider = document.querySelector('.pokemon-list');
-    const slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
-
-    slides.forEach((slide, index) => {
-      const slideImage = slide.querySelector('img')
-      // disable default image drag
-      slideImage.addEventListener('dragstart', (e) => e.preventDefault())
-      // touch events
-      slide.addEventListener('touchstart', touchStart(index))
-      slide.addEventListener('touchend', touchEnd)
-      slide.addEventListener('touchmove', touchMove)
-      // mouse events
-      slide.addEventListener('mousedown', touchStart(index))
-      slide.addEventListener('mouseup', touchEnd)
-      slide.addEventListener('mousemove', touchMove)
-      slide.addEventListener('mouseleave', touchEnd)
-    })
+  
+  //THIS FUNCTION BUILD EACH CAROUSEL ITEM USING details ARRAY
+  //IT ALSO CHECKS FOR ACTIVE CLASS
+  function buildCarouselItems(details){
+    let checkForActiveClass = document.querySelector('.carousel-item');
+    let itemHook = document.querySelector('.carousel-inner')
+    let name = details.name;
+    let img = details.imgUrl;
+    name = capitalize(name)
+    // showLoadingMessage('.main-img')
+    let item = `<div class="carousel-item">
+      <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
+      <div class="carousel-caption d-xs-block mb-5">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
+          ${name}
+        </button>
+      </div>
+    </div>`
     
-  }
-  function getPositionX(event) {
-    return event.type.includes('mouse') ? event.pageX : event.touches[0].clientX
-  }
-  function filterByName(name){
-    showLoadingMessage('.filtered-list', 'load-search')
-    setTimeout(()=>{
-      // store the filtered array in filtered variable
-      
-      let filtered = pokemonDetails.filter(pokemon => {
-        console.log(pokemon.name)
-      if(pokemon.name == name){
-        return true;
-      }
-    })
-    // if there is a match, the filtered array will store it in the 1st position
-    if(filtered[0]){
-      // hideLoadingMessage('load-search');
-      let button = document.querySelector('.filtered-list');
-      button.innerText = `You selected ${name} using the filter by name function on line 169`
-      events(button, filtered[0])
-    }else{
-      document.write(`Sorry there is no pokemon by that name in my list. <br>` )
+    itemHook.insertAdjacentHTML('beforeend', item)
+    if(!checkForActiveClass){
+      //IF THERE IS NO ACTIVE CLASS -- SET ONE
+      document.querySelector('.carousel-item').classList.add('active')
     }
-    }, 2200)
   }
-  function showLoadingMessage(selector, id){    
-    let el = document.querySelector(selector);
-    return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
+  
+  //THIS FUNCTION BUILDS THE SLIDE INDICATORS
+  //IT USES details ARRAY TO ADD THE IMG OF THE POKEMON
+  function buildIndicators(details, index){
+    // showLoadingMessage('.carousel-indicators', 'indicators')
+    let indicatorHook = document.querySelector('.carousel-indicators')
+    // hideLoadingMessage('indicators')
+    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`;
+    
+    indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
+  }
+  
+  
+  // Utility functions -- functions 
+  function showLoadingMessage(selector, id){
+    // create the element
+    let el = document.createElement('span');
+    el.classList.add(`${id}`)
+    // set it's inside text
+    el.innerHTML = `<h1 id="${id}">Loading</h1>`;
+    //place it
+    document.querySelector(`${selector}`).insertAdjacentElement('beforeend', el)
+    // document.querySelector('.container').insertAdjacentElement('beforeend', el)
   }
   function hideLoadingMessage(id){
-    let el = document.querySelector(`#${id}`);
-    return el.remove();
+    let el = document.querySelectorAll(`${id}`);
+    el.forEach((e)=>{
+      e.remove()
+    })
   }
-  function showDetails(pokemon){
-    return createModal(pokemon)
-  }
-  
-  // use a HOF so we have index in a closure
-  function touchStart(index) {
-    return function (event) {
-      let slider = document.querySelector('.pokemon-list')
-      currentIndex = index
-      startPos = getPositionX(event)
-      isDragging = true
-      animationID = requestAnimationFrame(animation)
-      slider.classList.add('grabbing')
-    }
-  }
-  
-  function touchMove(event) {
-    if (isDragging) {
-      const currentPosition = getPositionX(event)
-      currentTranslate = prevTranslate + currentPosition - startPos
-    }
-  }
-  function touchEnd() {
-    let slider = document.querySelector('.pokemon-list')
-    slides = Array.from(document.querySelectorAll('.pokemon-list__item'))
-    cancelAnimationFrame(animationID)
-    isDragging = false
-    const movedBy = currentTranslate - prevTranslate
-  
-    // if moved enough negative then snap to next slide if there is one
-    if (movedBy < -100 && currentIndex < slides.length - 1) currentIndex += 1
-  
-    // if moved enough positive then snap to previous slide if there is one
-    if (movedBy > 100 && currentIndex > 0) currentIndex -= 1
-  
-    setPositionByIndex()
-  
-    slider.classList.remove('grabbing')
-  }
-  function animation() {
-    setSliderPosition()
-    if (isDragging) requestAnimationFrame(animation)
-  }
-  function setPositionByIndex() {
-    currentTranslate = currentIndex * -window.innerWidth
-    prevTranslate = currentTranslate
-    setSliderPosition()
-  }
-  function setSliderPosition() {
-    let slider = document.querySelector('.pokemon-list')
-    slider.style.transform = `translateX(${currentTranslate}px)`
-  }
-  
-  
-  
-  
-  // MAIN BUTTON EVENT LISTENER
-  function events(button, pokemon){
-    button.addEventListener("click", ()=>{
-      return showDetails(pokemon);
-    })  
-    //!FOR QUOKKA TESTING
-    // return showDetails(pokemon.url);
-  }
-  // MODAL SPECIFIC EVENTS
-  function modalEvents(){
-    let modal = document.querySelector('.modal');
-    let closeBtn = document.querySelector('.modal__close');
-    window.addEventListener('keydown',(e)=>{
-      if(e.key === 'Escape'){
-        return closeModal();
+  function getInfo(search = null){
+    // if the search item is clicked
+    if(search != null){
+      console.log('search is set')
+      //active is the pokemon currently displayed in search result
+      let active = document.querySelector('#search-result').innerText;
+      active = active.trim()
+      for(var i = 0; i < pokemonDetails.length; i++){
+        let listName = pokemonDetails[i].name
+        if(listName === active){
+          let currentModal = document.querySelector('.modal')
+          if(currentModal){
+            //removes the modal if there is one in the DOM
+            console.log('removing modal')
+            document.querySelector('.modal').remove()
+          }
+          let result = pokemonDetails[i];
+          return createModal(result)
+          
+        }else{
+          console.log(active)
+          console.log(active + ' is not the same as ' + listName)
+        }
       }
-    })
-    modal.addEventListener('click', function(e){
-      let target = e.target
-      if(target === modal){
-        return closeModal();
-      }
-    })
-    closeBtn.addEventListener('click', function(){
-      return closeModal();
-    })
-  }
-  function createModal(details){
-    let mainContainer = document.querySelector('.container');
-    let currentModal = document.querySelector('.modal')
-    if(currentModal){
-      //removes the modal if there is one in the DOM
-      document.querySelector('.modal').remove()
     }else{
-      let modal = document.createElement('div');
-      mainContainer.insertAdjacentElement('afterend', modal);
-      modal.classList.add('modal--is-visible');
-      modal.classList.add('modal');
-      showLoadingMessage('.modal', 'modal-container');
-      setTimeout(function(){
-        hideLoadingMessage('modal-container')
-        let modalCloseBtn = document.createElement('span');
-        let modalContainer = document.createElement('div');
-        let modalHeadline = document.createElement('h1');
-        let modalImg = document.createElement('img');
-        let modalCopy = document.createElement('ul');
-        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
-        
-        
-        modal.append(modalContainer);
-        modalContainer.appendChild(modalCloseBtn);
-        modalContainer.classList.add('modal__container');
-        modalCloseBtn.classList.add('modal__close');
-        modalContainer.appendChild(modalHeadline);
-        modalContainer.appendChild(modalImg);
-        modalContainer.appendChild(modalCopy);
-        
-        //add classes to new elements
-        modalHeadline.classList.add('modal__headline');
-        modalImg.classList.add('modal__img');
-        modalCopy.classList.add('modal__copy');
-        
-        
-        
-        
-        modalCloseBtn.innerText = `Close`;
-        modalHeadline.innerText = `Name:  ${details.name}`;
-        modalCopy.innerHTML = `
-            <li>Weight:  ${details.weight}</li>
-            <li>Height:  ${details.height}</li>
-          `;
-        modalImg.setAttribute('src', `${details.imgUrl}`)
-        
-        modalEvents()
-        }, 2000)
-      
-      
-        
-        
-      //add the text and img to the modal
-      
+      //active is the pokemon currently displayed
+      let active = document.querySelector('div.active div button').innerText;
+      for(var i = 0; i < pokemonDetails.length; i++){
+        let listName = capitalize(pokemonDetails[i].name)
+        if(listName === active){
+          console.log(listName)
+          let currentModal = document.querySelector('.modal')
+          if(currentModal){
+            //removes the modal if there is one in the DOM
+            console.log('removing modal')
+            document.querySelector('.modal').remove()
+          }
+          let result = pokemonDetails[i];
+          return createModal(result)
+        }
+      }
     }
-    
-    
   }
-  function closeModal(){
-    document.querySelector('.modal').classList.remove('modal--is-visible');
-    return document.querySelector('.modal').remove();
+  function capitalize(str){
+    String(str)
+    let lower = str.toLowerCase();
+    return str.charAt(0).toUpperCase() + lower.slice(1)
   }
-  
-  
+  // LIVE SEARCH
+  function findByName(){
+    // initialize timer, get the input value, filter through the Array
+    let timer
+    // GET WHAT IS BEING TYPED IN
+    let value = document.querySelector("#search").value
+    
+    let searchHook = document.querySelector('#search-result');
+    // COMPARE PREV VALUE TO TYPED VALUE
+    if(previousValue != value){
+      clearTimeout(timer)
+      // IF THE VALUE IS NOT EMPTY
+      if(value != ''){
+        // WILL SHOW UNTIL THE SEARCHHOOK'S INNERTEXT IS OVERRIDDEN
+        if(!isWaiting){
+          searchHook.innerText = `loading..`
+        }
+        
+        // ALLOWS TIME TO TYPE BEFORE FILTERING THE ARRAY FOR THE NAME VALUE
+        timer = setTimeout(()=>{
+          let value = document.querySelector("#search").value.trim()
+          let searchResults = pokemonDetails.filter(pokemon=>{
+            if(pokemon.name === value){
+              console.log(pokemon)
+              return pokemon;
+              }
+            })
+          let searchHook = document.querySelector('#search-result');
+          
+          // CHECK FOR ANY RESULTS IN THE CALLBACK
+          if(searchResults.length != 0){
+            searchHook.innerText = searchResults[0].name
+            let result = `
+              <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo('${value}')" id="search-result" class="nav-link active" href="#">
+                <div class="search-display">
+                  <img class="search-display__img" src="${searchResults[0].imgUrl}" />
+                </div>
+              </a>
+            `
+            return searchHook.insertAdjacentHTML('beforeend', result)  
+          }else{
+            console.log('error')
+            let searchHook = document.querySelector('#search-result');
+            searchHook.innerText = '';
+            let result = `<span>No results found. Please check your spelling.</span>`
+            searchHook.insertAdjacentHTML('beforeend', result)
+          }
+        },450)
+      }
+      // SET PREV VALUE TO WHAT THE TYPED VALUE IS
+      previousValue = value;
+    }
+  }
+  // Modal functions 
+  function createModal(details){
+    let name = capitalize(details.name)
+      const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
+                              <div class="modal-content">
+                                  <div class="modal-header">
+                                      <h5 class="modal-title display-3 " id="exampleModal2Label">${name}</h5>
+                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                          <span aria-hidden="true">&times;</span>
+                                      </button>
+                                  </div>
+                                  <div class="modal-body">
+                                      <img class="w-100"  src="${details.imgUrl}" />
+                                      <h5 class="text-dark">Abilities</h5>
+                                      <ul class="list-group list-group-flush ability-list">
+                                        
+                                      </ul>
+                                      <hr>
+                                      <h5 class="text-dark">Types</h5>
+                                      <ul class="list-group list-group-flush type-list">
+                                        
+                                      </ul>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <h5>Height:</h5>
+                                    <p class="text-primary">${details.height}</p>
+                                    <h5>Weight:</h5>
+                                    <p class="text-primary">${details.weight}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>`
+        root.insertAdjacentHTML('beforeend', modal);
+        let modalContainer = document.querySelector('.modal-content')
+        buildAbilities(details.abilities)
+        buildTypes(details.types)
+        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
+        // modalEvents()
+      // setTimeout(function(){
+      //   modalEvents()
+      //   }, 2000)
+  }
+  let buildAbilities = (array)=>{
+    let hook = document.querySelector('.ability-list')
+    let li = `<li class="text-dark list-group-item"></li>`
+    for(var i = 0; i < array.length; i++){
+      let li = `<li class="text-dark list-group-item">${array[i].ability.name}</li>`
+      hook.insertAdjacentHTML('afterbegin', li)
+    }
+  }
+  function buildTypes(array){
+    let hook = document.querySelector('.type-list')
+    let li = `<li class="text-dark list-group-item"></li>`
+    for(var i = 0; i < array.length; i++){
+      let li = `<li class="text-dark list-group-item">${array[i].type.name}</li>`
+      hook.insertAdjacentHTML('afterbegin', li)
+    }
+  }
   
   
   return{
-    loadPage : loadPage,
-    filterByName : filterByName,
+    buildCarousel : buildCarousel,
+    getInfo : getInfo,
+    findByName : findByName
   }
 })();
-repository.loadPage()
-repository.filterByName('bulbasaur')
+repository.buildCarousel()
