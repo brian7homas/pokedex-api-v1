@@ -17,9 +17,13 @@ let repository = (function(){
     filteredList.classList.add('filtered-list')
     return loadApi();
   }
-  function showLoadingMessage(selector, id){    
-    let el = document.querySelector(selector);
-    return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
+  function showLoadingMessage(selector, id){
+    // create the element
+    let el = document.createElement('h1');
+    // set it's inside text
+    el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
+    //place it
+    document.querySelector('.carousel-inner').append( el)
   }
   function hideLoadingMessage(id){    
     let el = document.getElementById(id);
@@ -78,22 +82,25 @@ let repository = (function(){
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
       let itemHook = document.querySelector('.carousel-inner')
+      
       let name = details.name;
       let img = details.imgUrl;
       name = capitalize(name)
+      showLoadingMessage('.main-img', 'main-img')
       let item = `<div class="carousel-item">
-        <img class="d-block w-100 h-100" src="${img}" alt="${name} slide">
+        <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
         <div class="carousel-caption d-xs-block mb-5">
           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
             ${name}
           </button>
         </div>
       </div>`
+      
       itemHook.insertAdjacentHTML('beforeend', item)
+      hideLoadingMessage('main-img')
       if(!checkForActiveClass){
         document.querySelector('.carousel-item').classList.add('active')
       }
-      
       // console.log(img)
       
   }
@@ -111,7 +118,9 @@ let repository = (function(){
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
-    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`
+    showLoadingMessage('.carousel-indicators', 'indicator-loader')
+    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`;
+    hideLoadingMessage('indicator-loader')
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
   function loadApi(){
@@ -180,9 +189,34 @@ let repository = (function(){
     let lower = str.toLowerCase();
     return str.charAt(0).toUpperCase() + lower.slice(1)
   }
-  
-  function filterByName(name){
-    showLoadingMessage('.filtered-list', 'load-search')
+  function findByName(){
+    let value = document.querySelector("#search").value
+    let searchResults = pokemonDetails.filter(pokemon=>pokemon.name === value)
+    console.log(searchResults)
+    if(searchResults.length == 0){
+      console.log('error')
+    }else{
+      let searchHook = document.querySelector('#search-result');
+      searchHook.innerText = searchResults[0].name
+      // let result = document.createElement('img')
+      let result = `
+        <div class="search-display">
+          <img class="search-display__img" src="${searchResults[0].imgUrl}" />
+        </div>
+      `
+      // result.classList.add('w-25')
+      
+      // result.setAttribute('src', searchResults[0].imgUrl)
+      // searchHook.innerHTML = result
+      // searchHook.appendChild(result)
+      searchHook.insertAdjacentHTML('beforeend', result)
+      console.log(searchResults)
+    }
+  }
+  function filterByName(){
+    // showLoadingMessage('.filtered-list', 'load-search')
+    let value = document.querySelector("#search").value
+    console.log(value)
     setTimeout(()=>{
       // store the filtered array in filtered variable
       
@@ -203,7 +237,24 @@ let repository = (function(){
     }
     }, 2200)
   }
+  let buildAbilities = (array)=>{
+    let hook = document.querySelector('.ability-list')
+    let li = `<li class="text-dark list-group-item"></li>`
+    for(var i = 0; i < array.length; i++){
+      let li = `<li class="text-dark list-group-item">${array[i].ability.name}</li>`
+      hook.insertAdjacentHTML('afterbegin', li)
+    }
+  }
+  function buildTypes(array){
+    let hook = document.querySelector('.type-list')
+    let li = `<li class="text-dark list-group-item"></li>`
+    for(var i = 0; i < array.length; i++){
+      let li = `<li class="text-dark list-group-item">${array[i].type.name}</li>`
+      hook.insertAdjacentHTML('afterbegin', li)
+    }
+  }
   function createModal(details){
+    
     let name = capitalize(details.name)
       const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
                           <div class="modal-dialog modal-dialog-centered" role="document">
@@ -217,13 +268,13 @@ let repository = (function(){
                                   <div class="modal-body">
                                       <img class="w-100"  src="${details.imgUrl}" />
                                       <h5 class="text-dark">Abilities</h5>
-                                      <ul class="list-group list-group-flush">
-                                        <li class="text-dark list-group-item">${details.abilities[0].ability.name}</li>
+                                      <ul class="list-group list-group-flush ability-list">
+                                        
                                       </ul>
                                       <hr>
                                       <h5 class="text-dark">Types</h5>
-                                      <ul class="list-group list-group-flush">
-                                        <li class="text-dark list-group-item">${details.types[0].type.name}</li>
+                                      <ul class="list-group list-group-flush type-list">
+                                        
                                       </ul>
                                   </div>
                                   <div class="modal-footer">
@@ -237,6 +288,8 @@ let repository = (function(){
                       </div>`
         root.insertAdjacentHTML('beforeend', modal);
         let modalContainer = document.querySelector('.modal-content')
+        buildAbilities(details.abilities)
+        buildTypes(details.types)
         modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
         // modalEvents()
       // setTimeout(function(){
@@ -245,7 +298,8 @@ let repository = (function(){
   }
   return{
     buildCarosel : buildCarosel,
-    getInfo : getInfo
+    getInfo : getInfo,
+    findByName : findByName
   }
 })();
 repository.buildCarosel()

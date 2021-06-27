@@ -21,7 +21,7 @@ html,body{
   min-height:100vh;
 } */
 .h-100{
-  /* min-height: 100vh; */
+  min-height: 90vh;
   min-height: 90vh;
 }
 /* .mw-100{
@@ -65,8 +65,17 @@ h3{
   -ms-transform: scale(3.5) translateY(-.7rem) ;
   -o-transform: scale(3.5) translateY(-.7rem) ;
 }
-
-
+nav{
+  padding:2em 3em;
+  background-color: transparent;
+  z-index: 100;
+}
+.search-display{
+  display:inline;
+}
+.search-display__img{
+  max-width: 10%;
+}
 .slider{
   /*height:100vh;
   */display:inline-flex;
