@@ -11,7 +11,7 @@ let repository = (function(){
   
   //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
   //THEN CALLS THE loadApi() FUNCTION
-  function buildCarosel(){
+  function buildCarousel(){
     showLoadingMessage('body', 'body')
     const root = document.querySelector('#root');
     const carousel = ` 
@@ -161,7 +161,6 @@ let repository = (function(){
   }
   function hideLoadingMessage(id){
     let el = document.querySelectorAll(`${id}`);
-    
     el.forEach((e)=>{
       e.remove()
     })
@@ -329,9 +328,9 @@ let repository = (function(){
   
   
   return{
-    buildCarosel : buildCarosel,
+    buildCarousel : buildCarousel,
     getInfo : getInfo,
     findByName : findByName
   }
 })();
-repository.buildCarosel()
+repository.buildCarousel()
