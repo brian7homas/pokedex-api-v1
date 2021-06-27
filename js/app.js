@@ -7,6 +7,9 @@ let repository = (function(){
   
   
   // Main functions
+  
+  //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
+  //THEN CALLS THE loadApi() FUNCTION
   function buildCarosel(){
     const root = document.querySelector('#root');
     const carousel = ` 
@@ -36,24 +39,23 @@ let repository = (function(){
     </div>`
     // root.appendChild(carousel)
     root.insertAdjacentHTML('beforeend', carousel)
-    // showLoadingMessage('.container', 'container')
     loadApi()
   }
+  
+  //THIS FUNCTION LOADS THE URL
+  //THEN CALLS THE loadDetails() WITH THE item.url AS AN ARG
   function loadApi(){
-    // hideLoadingMessage('container')
     fetch(URL).then(function(res){
       return res.json();
     }).then(function(json){
-      
       json.results.forEach(function(item){
-        let pokemon = {
-          name: item.name,
-          url: item.url
-        }
         loadDetails(item.url)
       })
     })
   }
+  
+  //THIS FUNCTION INITIALIZES DETAILS OBJECT
+  //THEN CALLS THE validateObject() FUNCTION WITH THE details OBJECT AS AN ARG
   function loadDetails(pokemon){
     fetch(pokemon).then(function(res){
       // console.log(res.json())
@@ -69,10 +71,14 @@ let repository = (function(){
         png: json.sprites.front_default,
         types: json.types
       }
-      // pokemonDetails.push(details);
       validateObject(details)
     })
   }
+  
+  //THIS FUNCTION TAKES THE details OBJECT
+  //THEN COMPARES pokemonDetails OBJECT KEYS TO THE item KEYS
+  //IF THEY COMPARE THEY ARE ADDED TO THE pokemonDetails ARRAY
+  //THEN buildIndicators() and buildCarouselItems() ARE RUN
   function validateObject(item){
     if(!item || item == undefined){
       document.write('Make sure your passing an object and that it is not empty <br>')
@@ -82,7 +88,6 @@ let repository = (function(){
       let itemKeys = Object.keys(item);
       let detailsKeys = Object.keys(pokemonDetails[0]);
       let addToList = true;
-      
       itemKeys.forEach((key, i) => {
         if(key != detailsKeys[i]){
           addToList = false;
@@ -92,37 +97,43 @@ let repository = (function(){
       });
       if(addToList){
         pokemonDetails.push(item);
+        //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
+        //indicatorNum IS INITIALIZED ON LINE 6
         buildIndicators(item, indicatorNum)
         indicatorNum++;
         buildCarouselItems(item)
       }
     }
   }
+  
+  //THIS FUNCTION BUILD EACH CAROUSEL ITEM USING details ARRAY
+  //IT ALSO CHECKS FOR ACTIVE CLASS
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
-      let itemHook = document.querySelector('.carousel-inner')
-      
-      let name = details.name;
-      let img = details.imgUrl;
-      name = capitalize(name)
-      showLoadingMessage('.main-img', 'main-img')
-      let item = `<div class="carousel-item">
-        <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
-        <div class="carousel-caption d-xs-block mb-5">
-          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
-            ${name}
-          </button>
-        </div>
-      </div>`
-      
-      itemHook.insertAdjacentHTML('beforeend', item)
-      hideLoadingMessage('main-img')
-      if(!checkForActiveClass){
-        document.querySelector('.carousel-item').classList.add('active')
-      }
-      // console.log(img)
-      
+    let itemHook = document.querySelector('.carousel-inner')
+    let name = details.name;
+    let img = details.imgUrl;
+    name = capitalize(name)
+    showLoadingMessage('.main-img', 'main-img')
+    let item = `<div class="carousel-item">
+      <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
+      <div class="carousel-caption d-xs-block mb-5">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
+          ${name}
+        </button>
+      </div>
+    </div>`
+    
+    itemHook.insertAdjacentHTML('beforeend', item)
+    hideLoadingMessage('main-img')
+    if(!checkForActiveClass){
+      //IF THERE IS NO ACTIVE CLASS -- SET ONE
+      document.querySelector('.carousel-item').classList.add('active')
+    }
   }
+  
+  //THIS FUNCTION BUILDS THE SLIDE INDICATORS
+  //IT USES details ARRAY TO ADD THE IMG OF THE POKEMON
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
     showLoadingMessage('.carousel-indicators', 'indicator-loader')
@@ -132,7 +143,7 @@ let repository = (function(){
   }
   
   
-  // Utility functions
+  // Utility functions -- functions 
   function showLoadingMessage(selector, id){
     // create the element
     let el = document.createElement('h1');
