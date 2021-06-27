@@ -17,10 +17,23 @@ let repository = (function(){
     filteredList.classList.add('filtered-list')
     return loadApi();
   }
+  function showLoadingMessage(selector, id){    
+    let el = document.querySelector(selector);
+    return el.innerHTML = `<h1 class='loading' id="${id}">Loading</h1>`;
+  }
+  function hideLoadingMessage(id){    
+    let el = document.getElementById(id);
+    return el.remove();
+  }
   function buildCarosel(){
     const root = document.querySelector('#root');
     const carousel = ` 
     <div class="container">
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Github</a>
+        </li>
+      </ul>
       <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
         <ol class="carousel-indicators">
           
@@ -41,6 +54,7 @@ let repository = (function(){
     </div>`
     // root.appendChild(carousel)
     root.insertAdjacentHTML('beforeend', carousel)
+    // showLoadingMessage('.container', 'container')
     loadApi()
   }
   function getInfo(){
@@ -101,10 +115,11 @@ let repository = (function(){
     indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
   }
   function loadApi(){
+    // hideLoadingMessage('container')
     fetch(URL).then(function(res){
       return res.json();
     }).then(function(json){
-      // hideLoadingMessage('list')
+      
       json.results.forEach(function(item){
         let pokemon = {
           name: item.name,
