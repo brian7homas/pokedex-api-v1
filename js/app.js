@@ -5,18 +5,6 @@ let repository = (function(){
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   let indicatorNum = 0;
-  function loadPage(){
-    let ul = document.querySelector('.pokemon-list');
-
-    let filteredList = document.createElement('ul');
-    
-    // showLoadingMessage('.pokemon-list', 'list')
-    
-    ul.insertAdjacentElement('beforebegin', filteredList)
-    
-    filteredList.classList.add('filtered-list')
-    return loadApi();
-  }
   function showLoadingMessage(selector, id){
     // create the element
     let el = document.createElement('h1');
@@ -103,18 +91,6 @@ let repository = (function(){
       }
       // console.log(img)
       
-  }
-  function modal(result){
-    console.log(result.name)
-    let name = capitalize(result.name)
-    const root = document.querySelector('#root');
-    //get info from array
-    // name = capitalize(details.name)
-    
-      let modalTitle = document.querySelector('.modal-title')
-      let modalContainer = document.querySelector('.modal-content')
-      modalTitle.innerText = name;
-      modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`)
   }
   function buildIndicators(details, index){
     let indicatorHook = document.querySelector('.carousel-indicators')
@@ -204,11 +180,6 @@ let repository = (function(){
           <img class="search-display__img" src="${searchResults[0].imgUrl}" />
         </div>
       `
-      // result.classList.add('w-25')
-      
-      // result.setAttribute('src', searchResults[0].imgUrl)
-      // searchHook.innerHTML = result
-      // searchHook.appendChild(result)
       searchHook.insertAdjacentHTML('beforeend', result)
       console.log(searchResults)
     }
