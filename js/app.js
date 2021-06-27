@@ -1,14 +1,4 @@
 // const fetch = require('node-fetch');   
-//   <div class="carousel-item active">
-//     <img class="d-block w-100" src="" alt="First slide">
-//   </div>
-//   <div class="carousel-item">
-//     <img class="d-block w-100" src="" alt="Second slide">
-//   </div>
-//   <div class="carousel-item">
-//     <img class="d-block w-100" src="" alt="Third slide">
-//   </div>
-// </div>
 let repository = (function(){
   let list = [{"name":'',"url": ''}];
   let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":'',"types":''}];
@@ -198,46 +188,34 @@ let repository = (function(){
     }
     }, 2200)
   }
-  
-  
-  
-  /** */
-  
-  
-  
-  
-  // MAIN BUTTON EVENT LISTENER
-  function events(button, pokemon){
-    button.addEventListener("click", ()=>{
-      return showDetails(pokemon);
-    })  
-    //!FOR QUOKKA TESTING
-    // return showDetails(pokemon.url);
-  }
   function createModal(details){
-    console.log(details)
+    let name = capitalize(details.name)
       const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
-                          <div class="modal-dialog" role="document">
+                          <div class="modal-dialog modal-dialog-centered" role="document">
                               <div class="modal-content">
                                   <div class="modal-header">
-                                      <h5 class="modal-title bg-dark" id="exampleModal2Label">${details.name}</h5>
+                                      <h5 class="modal-title display-3 " id="exampleModal2Label">${name}</h5>
                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                           <span aria-hidden="true">&times;</span>
                                       </button>
                                   </div>
                                   <div class="modal-body">
-                                      <h5>Abilities</h5>
-                                      <ul>
-                                        <li>${details.abilities[0].ability.name}</li>
-                                        <li>${details.abilities[1].ability.name}</li>
+                                      <img class="w-100"  src="${details.imgUrl}" />
+                                      <h5 class="text-dark">Abilities</h5>
+                                      <ul class="list-group list-group-flush">
+                                        <li class="text-dark list-group-item">${details.abilities[0].ability.name}</li>
                                       </ul>
                                       <hr>
-                                      <h5>Tooltips in a modal</h5>
-                                      <p><a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">This link</a> and <a href="#" class="tooltip-test" title="Tooltip" data-toggle="tooltip" data-placement="top">that link</a> have tooltips on hover.</p>
+                                      <h5 class="text-dark">Types</h5>
+                                      <ul class="list-group list-group-flush">
+                                        <li class="text-dark list-group-item">${details.types[0].type.name}</li>
+                                      </ul>
                                   </div>
                                   <div class="modal-footer">
-                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                      <button type="button" class="btn btn-primary">Save changes</button>
+                                    <h5>Height:</h5>
+                                    <p class="text-primary">${details.height}</p>
+                                    <h5>Weight:</h5>
+                                    <p class="text-primary">${details.weight}</p>
                                   </div>
                               </div>
                           </div>
@@ -250,22 +228,9 @@ let repository = (function(){
       //   modalEvents()
       //   }, 2000)
   }
-  function closeModal(){
-    let modal = document.querySelector('.modal');
-    console.log(modal)
-    return modal.remove();
-  }
-  
-  
-  
   return{
-    loadPage : loadPage,
-    filterByName : filterByName,
-    loadApi : loadApi,
     buildCarosel : buildCarosel,
-    modal : modal,
     getInfo : getInfo
-    
   }
 })();
 repository.buildCarosel()

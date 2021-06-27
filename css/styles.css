@@ -39,6 +39,8 @@ h3{
 }
 .modal-content{
   background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 .slider{
   /*height:100vh;
