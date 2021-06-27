@@ -174,14 +174,20 @@ let repository = (function(){
     console.log(searchResults)
     if(searchResults.length == 0){
       console.log('error')
+      let searchHook = document.querySelector('#search-result');
+      searchHook.innerText = '';
+      let result = `<span>Sorry, there are no pokemon by that name.</span>`
+      searchHook.insertAdjacentHTML('beforeend', result)
     }else{
       let searchHook = document.querySelector('#search-result');
       searchHook.innerText = searchResults[0].name
       // let result = document.createElement('img')
       let result = `
-        <div class="search-display">
-          <img class="search-display__img" src="${searchResults[0].imgUrl}" />
-        </div>
+        <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()" id="search-result" class="nav-link active" href="#">
+          <div class="search-display">
+            <img class="search-display__img" src="${searchResults[0].imgUrl}" />
+          </div>
+        </a>
       `
       searchHook.insertAdjacentHTML('beforeend', result)
       console.log(searchResults)
