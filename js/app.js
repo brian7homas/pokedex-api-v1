@@ -145,21 +145,46 @@ let repository = (function(){
     let el = document.getElementById(id);
     return el.remove();
   }
-  function getInfo(){
-    let active = document.querySelector('div.active div button').innerText;
-    console.log(active)
-    for(var i = 0; i < pokemonDetails.length; i++){
-      let listName = capitalize(pokemonDetails[i].name)
-      if(listName === active){
-        console.log(listName)
-        let currentModal = document.querySelector('.modal')
-        if(currentModal){
-          //removes the modal if there is one in the DOM
-          console.log('removing modal')
-          document.querySelector('.modal').remove()
+  function getInfo(search = null){
+    // if the search item is clicked
+    if(search != null){
+      console.log('search is set')
+      //active is the pokemon currently displayed in search result
+      let active = document.querySelector('#search-result').innerText;
+      active = active.trim()
+      for(var i = 0; i < pokemonDetails.length; i++){
+        let listName = pokemonDetails[i].name
+        if(listName === active){
+          let currentModal = document.querySelector('.modal')
+          if(currentModal){
+            //removes the modal if there is one in the DOM
+            console.log('removing modal')
+            document.querySelector('.modal').remove()
+          }
+          let result = pokemonDetails[i];
+          return createModal(result)
+          
+        }else{
+          console.log(active)
+          console.log(active + ' is not the same as ' + listName)
         }
-        let result = pokemonDetails[i];
-        return createModal(result)
+      }
+    }else{
+      //active is the pokemon currently displayed
+      let active = document.querySelector('div.active div button').innerText;
+      for(var i = 0; i < pokemonDetails.length; i++){
+        let listName = capitalize(pokemonDetails[i].name)
+        if(listName === active){
+          console.log(listName)
+          let currentModal = document.querySelector('.modal')
+          if(currentModal){
+            //removes the modal if there is one in the DOM
+            console.log('removing modal')
+            document.querySelector('.modal').remove()
+          }
+          let result = pokemonDetails[i];
+          return createModal(result)
+        }
       }
     }
   }
@@ -183,7 +208,7 @@ let repository = (function(){
       searchHook.innerText = searchResults[0].name
       // let result = document.createElement('img')
       let result = `
-        <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()" id="search-result" class="nav-link active" href="#">
+        <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo('${value}')" id="search-result" class="nav-link active" href="#">
           <div class="search-display">
             <img class="search-display__img" src="${searchResults[0].imgUrl}" />
           </div>
