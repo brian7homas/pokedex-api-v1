@@ -7,46 +7,7 @@ let repository = (function(){
   let previousValue = document.querySelector('#search').value;
   let isWaiting = false;
   
-  // Main functions
   
-  //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
-  //THEN CALLS THE loadApi() FUNCTION
-  //// function buildCarousel(){
-  ////   showLoadingMessage('body', 'body')
-  ////   const root = document.querySelector('#root');
-  ////   const carousel = ` 
-  ////   <div class="container">
-  ////     <ul class="nav justify-content-end">
-  ////       <li class="nav-item">
-  ////         <a class="nav-link active" href="#">Github</a>
-  ////       </li>
-  ////     </ul>
-  ////     <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
-  ////       <ol class="carousel-indicators">
-          
-  ////       </ol>
-  ////       <div class="carousel-inner">
-        
-        
-        
-  ////       <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-  ////         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-  ////         <span class="sr-only">Prev</span>
-  ////       </a>
-  ////       <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-  ////         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-  ////         <span class="sr-only">Next</span>
-  ////       </a>
-  ////     </div>
-  ////   </div>`
-  ////   //// root.appendChild(carousel)
-  ////   root.insertAdjacentHTML('beforeend', carousel)
-  ////   showLoadingMessage('.carousel-inner', 'carousel-inner-loader')
-  ////   loadApi()
-  //// }
-  
-  //THIS FUNCTION LOADS THE URL
-  //THEN CALLS THE loadDetails() WITH THE item.url AS AN ARG
   function loadApi(){
     fetch(URL).then(function(res){
       hideLoadingMessage('.body')
@@ -58,8 +19,7 @@ let repository = (function(){
     })
   }
   
-  //THIS FUNCTION INITIALIZES DETAILS OBJECT
-  //THEN CALLS THE validateObject() FUNCTION WITH THE details OBJECT AS AN ARG
+  
   function loadDetails(pokemon){
     fetch(pokemon).then(function(res){
       // console.log(res.json())
@@ -75,44 +35,113 @@ let repository = (function(){
         png: json.sprites.front_default,
         types: json.types
       }
-      validateObject(details)
+      // validateObject(details)
+      validate(details)
     })
   }
   
-  //THIS FUNCTION TAKES THE details OBJECT
-  //THEN COMPARES pokemonDetails OBJECT KEYS TO THE item KEYS
-  //IF THEY COMPARE THEY ARE ADDED TO THE pokemonDetails ARRAY
-  //THEN buildIndicators() and buildCarouselItems() ARE RUN
-  function validateObject(item){
-    if(!item || item == undefined){
-      document.write('Make sure your passing an object and that it is not empty <br>')
-      document.write('Also make sure your passing [name: string, height: int, type: object]')
-      throw new Error('This add function only takes objects.<br>')
-    }else if(typeof(item) == 'object'){
-      let itemKeys = Object.keys(item);
-      let detailsKeys = Object.keys(pokemonDetails[0]);
-      let addToList = true;
-      itemKeys.forEach((key, i) => {
-        if(key != detailsKeys[i]){
-          addToList = false;
-          document.write(`'keys need to match [${detailsKeys}] <br>`);
-          throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-        }
-      });
-      if(addToList){
-        hideLoadingMessage('.carousel-inner-loader')
-        pokemonDetails.push(item);
-        //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
-        //indicatorNum IS INITIALIZED ON LINE 6
-        buildIndicators(item, indicatorNum)
-        indicatorNum++;
-        buildCarouselItems(item)
-      }
+  
+  
+  
+  function validate(item){
+    const pokemon = typeof(item);
+    let itemKeys = Object.keys(item);
+    let detailsKeys = Object.keys(pokemonDetails[0]);
+    switch(pokemon){
+      case 'array':
+        console.log('This is an array')
+        break;
+      case 'object':
+        console.log('This is an object')
+        itemKeys.forEach((key, i) => {
+          if(key != detailsKeys[i]){
+            document.write(`'keys need to match [${detailsKeys}] <br>`);
+            throw new Error(`'keys need to match [${detailsKeys}] <br>`)
+          }
+        });
+        isObject(item)
+        break;
+      case 'string':
+          console.log('This is an string')
+          break;
+      case 'number':
+        console.log('This is an number')
+        break;
+      case 'boolean':
+        console.log('This is an bool')
+        break;
+      case 'undefined':
+          console.log('You need to pass something')
+          break;
+      default:
+        console.log('this is a ' + pokemon)
     }
   }
+  function isObject(item){  
+    console.log('success')
+    // hideLoadingMessage('.carousel-inner-loader')
+    pokemonDetails.push(item);
+    console.log(pokemonDetails)
+    // buildIndicators(item, indicatorNum)
+    // buildCarouselItems(item)
+  }
   
-  //THIS FUNCTION BUILD EACH CAROUSEL ITEM USING details ARRAY
-  //IT ALSO CHECKS FOR ACTIVE CLASS
+  function validateObject(item){
+    
+    //SUCCESS
+    // if(typeof(item) === 'object'){
+      
+      // let itemKeys = Object.keys(item);
+      // let detailsKeys = Object.keys(pokemonDetails[0]);
+      // let addToList = true;
+      // itemKeys.forEach((key, i) => {
+      //   if(key != detailsKeys[i]){
+      //     addToList = false;
+      //     document.write(`'keys need to match [${detailsKeys}] <br>`);
+      //     throw new Error(`'keys need to match [${detailsKeys}] <br>`)
+      //   }
+      // });
+      // if(addToList){
+      //   hideLoadingMessage('.carousel-inner-loader')
+      //   pokemonDetails.push(item);
+      //   //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
+      //   //indicatorNum IS INITIALIZED ON LINE 6
+      //   buildIndicators(item, indicatorNum)
+      //   indicatorNum++;
+      //   buildCarouselItems(item)
+      // }
+    
+    // }
+    
+    
+    // if(!item || item == undefined){
+    //   document.write('Make sure your passing an object and that it is not empty <br>')
+    //   document.write('Also make sure your passing [name: string, height: int, type: object]')
+    //   throw new Error('This add function only takes objects.<br>')
+    // }else if(typeof(item) == 'object'){
+    //   let itemKeys = Object.keys(item);
+    //   let detailsKeys = Object.keys(pokemonDetails[0]);
+    //   let addToList = true;
+    //   itemKeys.forEach((key, i) => {
+    //     if(key != detailsKeys[i]){
+    //       addToList = false;
+    //       document.write(`'keys need to match [${detailsKeys}] <br>`);
+    //       throw new Error(`'keys need to match [${detailsKeys}] <br>`)
+    //     }
+    //   });
+    //   if(addToList){
+    //     hideLoadingMessage('.carousel-inner-loader')
+    //     pokemonDetails.push(item);
+    //     //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
+    //     //indicatorNum IS INITIALIZED ON LINE 6
+    //     buildIndicators(item, indicatorNum)
+    //     indicatorNum++;
+    //     buildCarouselItems(item)
+    //   }
+    // }
+  }
+  
+  
   function buildCarouselItems(details){
     let checkForActiveClass = document.querySelector('.carousel-item');
     let itemHook = document.querySelector('.carousel-inner')
@@ -136,8 +165,7 @@ let repository = (function(){
     }
   }
   
-  //THIS FUNCTION BUILDS THE SLIDE INDICATORS
-  //IT USES details ARRAY TO ADD THE IMG OF THE POKEMON
+  
   function buildIndicators(details, index){
     // showLoadingMessage('.carousel-indicators', 'indicators')
     let indicatorHook = document.querySelector('.carousel-indicators')
@@ -328,9 +356,9 @@ let repository = (function(){
   
   
   return{
-    buildCarousel : buildCarousel,
-    getInfo : getInfo,
-    findByName : findByName,
+    // buildCarousel : buildCarousel,
+    // getInfo : getInfo,
+    // findByName : findByName,
     
     loadApi : loadApi
   }
