@@ -24,8 +24,6 @@ let repository = (function(){
       })
     })
   }
-  
-  
   function loadDetails(pokemon){
     fetch(pokemon).then(function(res){
       // console.log(res.json())
@@ -41,112 +39,8 @@ let repository = (function(){
         png: json.sprites.front_default,
         types: json.types
       }
-      // validateObject(details)
-      // let validatedData = validate(details)
-      // console.log(validate(details))
       dataInteraction.addData(dataInteraction.validate(details))
     })
-  }
-  
-  
-  
-  
-  // function validate(item){
-  //   const pokemon = typeof(item);
-  //   let itemKeys = Object.keys(item);
-  //   let detailsKeys = Object.keys(pokemonDetails[0]);
-  //   switch(pokemon){
-  //     case 'array':
-  //       console.log('This is an array')
-  //       break;
-  //     case 'object':
-  //       console.log('This is an object')
-  //       itemKeys.forEach((key, i) => {
-  //         if(key != detailsKeys[i]){
-  //           document.write(`'keys need to match [${detailsKeys}] <br>`);
-  //           throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-  //         }
-  //       });
-  //       isObject(item)
-  //       break;
-  //     case 'string':
-  //         console.log('This is an string')
-  //         break;
-  //     case 'number':
-  //       console.log('This is an number')
-  //       break;
-  //     case 'boolean':
-  //       console.log('This is an bool')
-  //       break;
-  //     case 'undefined':
-  //         console.log('You need to pass something')
-  //         break;
-  //     default:
-  //       console.log('this is a ' + pokemon)
-  //   }
-  // }
-  // function isObject(item){  
-  //   console.log('success')
-  //   // hideLoadingMessage('.carousel-inner-loader')
-  //   data.pokemonDetails.push(item);
-  //   console.log(pokemonDetails)
-  //   // buildIndicators(item, indicatorNum)
-  //   // buildCarouselItems(item)
-  // }
-  
-  function validateObject(item){
-    
-    //SUCCESS
-    // if(typeof(item) === 'object'){
-      
-      // let itemKeys = Object.keys(item);
-      // let detailsKeys = Object.keys(pokemonDetails[0]);
-      // let addToList = true;
-      // itemKeys.forEach((key, i) => {
-      //   if(key != detailsKeys[i]){
-      //     addToList = false;
-      //     document.write(`'keys need to match [${detailsKeys}] <br>`);
-      //     throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-      //   }
-      // });
-      // if(addToList){
-      //   hideLoadingMessage('.carousel-inner-loader')
-      //   pokemonDetails.push(item);
-      //   //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
-      //   //indicatorNum IS INITIALIZED ON LINE 6
-      //   buildIndicators(item, indicatorNum)
-      //   indicatorNum++;
-      //   buildCarouselItems(item)
-      // }
-    
-    // }
-    
-    
-    // if(!item || item == undefined){
-    //   document.write('Make sure your passing an object and that it is not empty <br>')
-    //   document.write('Also make sure your passing [name: string, height: int, type: object]')
-    //   throw new Error('This add function only takes objects.<br>')
-    // }else if(typeof(item) == 'object'){
-    //   let itemKeys = Object.keys(item);
-    //   let detailsKeys = Object.keys(pokemonDetails[0]);
-    //   let addToList = true;
-    //   itemKeys.forEach((key, i) => {
-    //     if(key != detailsKeys[i]){
-    //       addToList = false;
-    //       document.write(`'keys need to match [${detailsKeys}] <br>`);
-    //       throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-    //     }
-    //   });
-    //   if(addToList){
-    //     hideLoadingMessage('.carousel-inner-loader')
-    //     pokemonDetails.push(item);
-    //     //INDICATOR NUM IS NEEDED TO NUMBER THE data-slide-to IN THE CORRECT ORDER
-    //     //indicatorNum IS INITIALIZED ON LINE 6
-    //     buildIndicators(item, indicatorNum)
-    //     indicatorNum++;
-    //     buildCarouselItems(item)
-    //   }
-    // }
   }
   
   
