@@ -1,49 +1,49 @@
 // const fetch = require('node-fetch');   
 let repository = (function(){
-  let pokemonDetails = [{"id": '',"imgUrl": '', "name":'',"height":'',"weight":'',"abilities":'',"png":'',"types":''}];
+  let pokemonDetails = [{'id': '','imgUrl': '', 'name':'','height':'','weight':'','abilities':'','png':'','types':''}];
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   let indicatorNum = 0;
-  let previousValue = document.querySelector("#search").value;
+  let previousValue = document.querySelector('#search').value;
   let isWaiting = false;
   
   // Main functions
   
   //THIS FUNCTION BUILDS THE MAIN CAROUSEL SKELETON
   //THEN CALLS THE loadApi() FUNCTION
-  function buildCarousel(){
-    showLoadingMessage('body', 'body')
-    const root = document.querySelector('#root');
-    const carousel = ` 
-    <div class="container">
-      <ul class="nav justify-content-end">
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Github</a>
-        </li>
-      </ul>
-      <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
-        <ol class="carousel-indicators">
+  //// function buildCarousel(){
+  ////   showLoadingMessage('body', 'body')
+  ////   const root = document.querySelector('#root');
+  ////   const carousel = ` 
+  ////   <div class="container">
+  ////     <ul class="nav justify-content-end">
+  ////       <li class="nav-item">
+  ////         <a class="nav-link active" href="#">Github</a>
+  ////       </li>
+  ////     </ul>
+  ////     <div id="carouselExampleIndicators" class="carousel slide h-100" data-ride="carousel">
+  ////       <ol class="carousel-indicators">
           
-        </ol>
-        <div class="carousel-inner">
+  ////       </ol>
+  ////       <div class="carousel-inner">
         
         
         
-        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="sr-only">Prev</span>
-        </a>
-        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="sr-only">Next</span>
-        </a>
-      </div>
-    </div>`
-    // root.appendChild(carousel)
-    root.insertAdjacentHTML('beforeend', carousel)
-    showLoadingMessage('.carousel-inner', 'carousel-inner-loader')
-    loadApi()
-  }
+  ////       <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+  ////         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+  ////         <span class="sr-only">Prev</span>
+  ////       </a>
+  ////       <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+  ////         <span class="carousel-control-next-icon" aria-hidden="true"></span>
+  ////         <span class="sr-only">Next</span>
+  ////       </a>
+  ////     </div>
+  ////   </div>`
+  ////   //// root.appendChild(carousel)
+  ////   root.insertAdjacentHTML('beforeend', carousel)
+  ////   showLoadingMessage('.carousel-inner', 'carousel-inner-loader')
+  ////   loadApi()
+  //// }
   
   //THIS FUNCTION LOADS THE URL
   //THEN CALLS THE loadDetails() WITH THE item.url AS AN ARG
@@ -218,7 +218,7 @@ let repository = (function(){
     // initialize timer, get the input value, filter through the Array
     let timer
     // GET WHAT IS BEING TYPED IN
-    let value = document.querySelector("#search").value
+    let value = document.querySelector('#search').value
     
     let searchHook = document.querySelector('#search-result');
     // COMPARE PREV VALUE TO TYPED VALUE
@@ -228,12 +228,12 @@ let repository = (function(){
       if(value != ''){
         // WILL SHOW UNTIL THE SEARCHHOOK'S INNERTEXT IS OVERRIDDEN
         if(!isWaiting){
-          searchHook.innerText = `loading..`
+          searchHook.innerText = 'loading..'
         }
         
         // ALLOWS TIME TO TYPE BEFORE FILTERING THE ARRAY FOR THE NAME VALUE
         timer = setTimeout(()=>{
-          let value = document.querySelector("#search").value.trim()
+          let value = document.querySelector('#search').value.trim()
           let searchResults = pokemonDetails.filter(pokemon=>{
             if(pokemon.name === value){
               console.log(pokemon)
@@ -257,7 +257,7 @@ let repository = (function(){
             console.log('error')
             let searchHook = document.querySelector('#search-result');
             searchHook.innerText = '';
-            let result = `<span>No results found. Please check your spelling.</span>`
+            let result = '<span>No results found. Please check your spelling.</span>'
             searchHook.insertAdjacentHTML('beforeend', result)
           }
         },450)
@@ -269,49 +269,49 @@ let repository = (function(){
   // Modal functions 
   function createModal(details){
     let name = capitalize(details.name)
-      const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
-                          <div class="modal-dialog modal-dialog-centered" role="document">
-                              <div class="modal-content">
-                                  <div class="modal-header">
-                                      <h5 class="modal-title display-3 " id="exampleModal2Label">${name}</h5>
-                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                          <span aria-hidden="true">&times;</span>
-                                      </button>
-                                  </div>
-                                  <div class="modal-body">
-                                      <img class="w-100"  src="${details.imgUrl}" />
-                                      <h5 class="text-dark">Abilities</h5>
-                                      <ul class="list-group list-group-flush ability-list">
-                                        
-                                      </ul>
-                                      <hr>
-                                      <h5 class="text-dark">Types</h5>
-                                      <ul class="list-group list-group-flush type-list">
-                                        
-                                      </ul>
-                                  </div>
-                                  <div class="modal-footer">
-                                    <h5>Height:</h5>
-                                    <p class="text-primary">${details.height}</p>
-                                    <h5>Weight:</h5>
-                                    <p class="text-primary">${details.weight}</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>`
-        root.insertAdjacentHTML('beforeend', modal);
-        let modalContainer = document.querySelector('.modal-content')
-        buildAbilities(details.abilities)
-        buildTypes(details.types)
-        modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
-        // modalEvents()
-      // setTimeout(function(){
-      //   modalEvents()
-      //   }, 2000)
+    const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title display-3 " id="exampleModal2Label">${name}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <img class="w-100"  src="${details.imgUrl}" />
+                                    <h5 class="text-dark">Abilities</h5>
+                                    <ul class="list-group list-group-flush ability-list">
+                                      
+                                    </ul>
+                                    <hr>
+                                    <h5 class="text-dark">Types</h5>
+                                    <ul class="list-group list-group-flush type-list">
+                                      
+                                    </ul>
+                                </div>
+                                <div class="modal-footer">
+                                  <h5>Height:</h5>
+                                  <p class="text-primary">${details.height}</p>
+                                  <h5>Weight:</h5>
+                                  <p class="text-primary">${details.weight}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+    root.insertAdjacentHTML('beforeend', modal);
+    let modalContainer = document.querySelector('.modal-content')
+    buildAbilities(details.abilities)
+    buildTypes(details.types)
+    modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
+    // modalEvents()
+    // setTimeout(function(){
+    //   modalEvents()
+    //   }, 2000)
   }
   let buildAbilities = (array)=>{
     let hook = document.querySelector('.ability-list')
-    let li = `<li class="text-dark list-group-item"></li>`
+    let li = '<li class="text-dark list-group-item"></li>'
     for(var i = 0; i < array.length; i++){
       let li = `<li class="text-dark list-group-item">${array[i].ability.name}</li>`
       hook.insertAdjacentHTML('afterbegin', li)
@@ -319,7 +319,7 @@ let repository = (function(){
   }
   function buildTypes(array){
     let hook = document.querySelector('.type-list')
-    let li = `<li class="text-dark list-group-item"></li>`
+    let li = '<li class="text-dark list-group-item"></li>'
     for(var i = 0; i < array.length; i++){
       let li = `<li class="text-dark list-group-item">${array[i].type.name}</li>`
       hook.insertAdjacentHTML('afterbegin', li)
@@ -330,7 +330,10 @@ let repository = (function(){
   return{
     buildCarousel : buildCarousel,
     getInfo : getInfo,
-    findByName : findByName
+    findByName : findByName,
+    
+    loadApi : loadApi
   }
 })();
-repository.buildCarousel()
+// repository.buildCarousel()
+repository.loadApi()
