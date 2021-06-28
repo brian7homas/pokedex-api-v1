@@ -1,6 +1,12 @@
 // const fetch = require('node-fetch');   
+import data from './modules/data.js';
+import dataInteraction from './modules/validate.js';
+// import addPokemon from './modules/addPokemon.js';
+
+// console.log(data)
 let repository = (function(){
-  let pokemonDetails = [{'id': '','imgUrl': '', 'name':'','height':'','weight':'','abilities':'','png':'','types':''}];
+  // let pokemonDetails = [{'id': '','imgUrl': '', 'name':'','height':'','weight':'','abilities':'','png':'','types':''}];
+  let pokemonDetails = data;
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   
   let indicatorNum = 0;
@@ -36,55 +42,57 @@ let repository = (function(){
         types: json.types
       }
       // validateObject(details)
-      validate(details)
+      // let validatedData = validate(details)
+      // console.log(validate(details))
+      dataInteraction.addData(dataInteraction.validate(details))
     })
   }
   
   
   
   
-  function validate(item){
-    const pokemon = typeof(item);
-    let itemKeys = Object.keys(item);
-    let detailsKeys = Object.keys(pokemonDetails[0]);
-    switch(pokemon){
-      case 'array':
-        console.log('This is an array')
-        break;
-      case 'object':
-        console.log('This is an object')
-        itemKeys.forEach((key, i) => {
-          if(key != detailsKeys[i]){
-            document.write(`'keys need to match [${detailsKeys}] <br>`);
-            throw new Error(`'keys need to match [${detailsKeys}] <br>`)
-          }
-        });
-        isObject(item)
-        break;
-      case 'string':
-          console.log('This is an string')
-          break;
-      case 'number':
-        console.log('This is an number')
-        break;
-      case 'boolean':
-        console.log('This is an bool')
-        break;
-      case 'undefined':
-          console.log('You need to pass something')
-          break;
-      default:
-        console.log('this is a ' + pokemon)
-    }
-  }
-  function isObject(item){  
-    console.log('success')
-    // hideLoadingMessage('.carousel-inner-loader')
-    pokemonDetails.push(item);
-    console.log(pokemonDetails)
-    // buildIndicators(item, indicatorNum)
-    // buildCarouselItems(item)
-  }
+  // function validate(item){
+  //   const pokemon = typeof(item);
+  //   let itemKeys = Object.keys(item);
+  //   let detailsKeys = Object.keys(pokemonDetails[0]);
+  //   switch(pokemon){
+  //     case 'array':
+  //       console.log('This is an array')
+  //       break;
+  //     case 'object':
+  //       console.log('This is an object')
+  //       itemKeys.forEach((key, i) => {
+  //         if(key != detailsKeys[i]){
+  //           document.write(`'keys need to match [${detailsKeys}] <br>`);
+  //           throw new Error(`'keys need to match [${detailsKeys}] <br>`)
+  //         }
+  //       });
+  //       isObject(item)
+  //       break;
+  //     case 'string':
+  //         console.log('This is an string')
+  //         break;
+  //     case 'number':
+  //       console.log('This is an number')
+  //       break;
+  //     case 'boolean':
+  //       console.log('This is an bool')
+  //       break;
+  //     case 'undefined':
+  //         console.log('You need to pass something')
+  //         break;
+  //     default:
+  //       console.log('this is a ' + pokemon)
+  //   }
+  // }
+  // function isObject(item){  
+  //   console.log('success')
+  //   // hideLoadingMessage('.carousel-inner-loader')
+  //   data.pokemonDetails.push(item);
+  //   console.log(pokemonDetails)
+  //   // buildIndicators(item, indicatorNum)
+  //   // buildCarouselItems(item)
+  // }
   
   function validateObject(item){
     
