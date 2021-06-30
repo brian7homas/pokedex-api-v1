@@ -266,8 +266,6 @@ function modal(search = null){
               typeList.insertAdjacentHTML('afterbegin', li)
             }
           })()
-        }else{
-          console.log(listName + ' is not a match')
         }
         
       }
