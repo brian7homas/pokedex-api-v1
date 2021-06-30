@@ -1,35 +1,24 @@
-// const fetch = require('node-fetch');   
-import data from './modules/data.js';
-import dataInteraction from './modules/validate.js';
-// import addPokemon from './modules/addPokemon.js';
-
-// console.log(data)
-let repository = (function(){
-  // let pokemonDetails = [{'id': '','imgUrl': '', 'name':'','height':'','weight':'','abilities':'','png':'','types':''}];
-  let pokemonDetails = data;
+// const fetch = require('node-fetch');
+// import validate from './modules/validate.js';
+let plist = [];
+let index = 0;
+let previousValue = document.querySelector('#search').value;
+let isWaiting = false;
+let pokemonRepository = (function(){
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
-  
-  let indicatorNum = 0;
-  let previousValue = document.querySelector('#search').value;
-  let isWaiting = false;
-  
-  
-  function loadApi(){
-    fetch(URL).then(function(res){
-      hideLoadingMessage('.body')
-      return res.json();
-    }).then(function(json){
-      json.results.forEach(function(item){
-        loadDetails(item.url)
-      })
+  fetch(URL).then(function(res){
+    return res.json();
+  }).then(function(json){
+    json.results.forEach(function(item){
+      callBack(item)
     })
-  }
-  function loadDetails(pokemon){
-    fetch(pokemon).then(function(res){
-      // console.log(res.json())
+  })
+  
+  let callBack = (function(list){
+    fetch(list.url).then(function(res){
       return res.json();
     }).then(function(json){
-      let details = {
+      let pokemon = {
         id: json.id,
         imgUrl: json.sprites.other.dream_world.front_default,
         name: json.name,
@@ -39,231 +28,250 @@ let repository = (function(){
         png: json.sprites.front_default,
         types: json.types
       }
-      dataInteraction.addData(dataInteraction.validate(details))
+      
+      let ObjectTest = [{'id': '','imgUrl': '', 'name':'','height':'','weight':'','abilities':'','png':'','types':''}];
+      let itemKeys = Object.keys(pokemon);
+      let testKeys = Object.keys(ObjectTest[0]);
+      let pokemonObject = typeof(pokemon);
+      switch(pokemonObject){
+        case 'array':
+          console.log('This is an array')
+          break;
+        case 'object':
+          testKeys.forEach((key, i) => {
+            if(key != itemKeys[i]){
+              document.write(`'keys need to match [${itemKeys}] <br>`);
+              throw new Error(`'keys need to match [${itemKeys}] <br>`)
+            }
+          });
+          return build(pokemon, plist).add(pokemon)
+        case 'string':
+            console.log('This is an string')
+            break;
+        case 'number':
+          console.log('This is an number')
+          break;
+        case 'boolean':
+          console.log('This is an bool')
+          break;
+        case 'undefined':
+            console.log('You need to pass something')
+            break;
+        default:
+          console.log('this is a ' + pokemonObject)
+      }
     })
-  }
-  
-  
-  function buildCarouselItems(details){
-    let checkForActiveClass = document.querySelector('.carousel-item');
+  })
+})();
+
+let build = (function (data, list){
+  let fromList = list;
+  let fromFetch = data;
+  // takes data directly from fetch
+  // to build carousel items
+  let carousel = (function (fromFetch){
     let itemHook = document.querySelector('.carousel-inner')
-    let name = details.name;
-    let img = details.imgUrl;
-    name = capitalize(name)
-    // showLoadingMessage('.main-img')
+    // let name = (function(){return `The pokemon's name is ${fromFetch.name}`})()
+    let name = fromFetch.name
     let item = `<div class="carousel-item">
-      <img class="d-block w-100 h-100 main-img" src="${img}" alt="${name} slide">
-      <div class="carousel-caption d-xs-block mb-5">
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo()">
-          ${name}
-        </button>
-      </div>
-    </div>`
-    
-    itemHook.insertAdjacentHTML('beforeend', item)
-    if(!checkForActiveClass){
-      //IF THERE IS NO ACTIVE CLASS -- SET ONE
-      document.querySelector('.carousel-item').classList.add('active')
+    <img class="d-block w-100 h-100 main-img" src="${fromFetch.imgUrl}" alt="${fromFetch.name} slide">
+    <div class="carousel-caption d-xs-block mb-5">
+      <button type="button" class="btn btn-primary get-info" data-toggle="modal" data-target="#exampleModal2" onclick="modal()">
+        ${name}
+      </button>
+    </div>
+  </div>`;
+  itemHook.insertAdjacentHTML('beforeend', item)
+  if(!document.querySelector('.carousel-item').classList.contains('active')){
+    //IF THERE IS NO ACTIVE CLASS -- SET ONE
+    document.querySelector('.carousel-item').classList.add('active')
+  }
+    })(fromFetch)
+  
+  // takes data directly from fetch
+  // to build carousel items  
+  let indicators = (function (fromFetch){
+    let itemHook =  document.querySelector('.carousel-indicators')
+    let indicator = `<li data-target="#carouselExampleIndicators" data-slide-to="${index++}" class="carousel-indicator"><img class="indicator-img w-100" src="${fromFetch.png}" alt="${fromFetch.name}"/></li>`
+    itemHook.insertAdjacentHTML('beforeend', indicator)
+    })(fromFetch)
+  
+  //adds the pokemon to the array
+  function add(pokemon){
+    if(pokemon){
+      fromList.push(pokemon)
     }
   }
-  
-  
-  function buildIndicators(details, index){
-    // showLoadingMessage('.carousel-indicators', 'indicators')
-    let indicatorHook = document.querySelector('.carousel-indicators')
-    // hideLoadingMessage('indicators')
-    let carouselIndicators = `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="carousel-indicator"><img class="indicator-img w-100" src="${details.png}" alt="${details.name}"/></li>`;
-    
-    indicatorHook.insertAdjacentHTML('beforeend', carouselIndicators)
+  return{
+    add:add
   }
-  
-  
-  // Utility functions -- functions 
-  function showLoadingMessage(selector, id){
-    // create the element
-    let el = document.createElement('span');
-    el.classList.add(`${id}`)
-    // set it's inside text
-    el.innerHTML = `<h1 id="${id}">Loading</h1>`;
-    //place it
-    document.querySelector(`${selector}`).insertAdjacentElement('beforeend', el)
-    // document.querySelector('.container').insertAdjacentElement('beforeend', el)
-  }
-  function hideLoadingMessage(id){
-    let el = document.querySelectorAll(`${id}`);
-    el.forEach((e)=>{
-      e.remove()
-    })
-  }
-  function getInfo(search = null){
-    // if the search item is clicked
-    if(search != null){
-      console.log('search is set')
-      //active is the pokemon currently displayed in search result
-      let active = document.querySelector('#search-result').innerText;
-      active = active.trim()
-      for(var i = 0; i < pokemonDetails.length; i++){
-        let listName = pokemonDetails[i].name
-        if(listName === active){
-          let currentModal = document.querySelector('.modal')
-          if(currentModal){
-            //removes the modal if there is one in the DOM
-            console.log('removing modal')
-            document.querySelector('.modal').remove()
+});
+
+function searchFunction(){
+  let timer;
+  let value = (function(){return document.querySelector('input#search').value;})()
+  let searchHook = document.querySelector('#search-result');
+  if(previousValue != value || value != false){
+    clearTimeout(timer)
+    if(value != null){
+      if(!isWaiting){
+        searchHook.innerText = 'loading..'
+      }
+      timer = setTimeout(()=>{
+        let results = plist.filter(pokemon=>{
+          if(pokemon.name === value){
+            return pokemon
           }
-          let result = pokemonDetails[i];
-          return createModal(result)
-          
+        })
+        let searchHook = document.querySelector('#search-result');
+        if(results.length != 0){
+          searchHook.innerText = results[0].name
+          let result = `
+            <a data-toggle="modal" data-target="#exampleModal2" onclick="modal('${results[0].name}')" id="search-result" class="nav-link active" href="#">
+              <div class="search-display">
+                <img class="search-display__img" src="${results[0].imgUrl}" />
+              </div>
+            </a>
+          `
+          return searchHook.insertAdjacentHTML('beforeend', result)  
         }else{
-          console.log(active)
-          console.log(active + ' is not the same as ' + listName)
+          searchHook.innerText = 'No results'
         }
-      }
-    }else{
-      //active is the pokemon currently displayed
-      let active = document.querySelector('div.active div button').innerText;
-      for(var i = 0; i < pokemonDetails.length; i++){
-        let listName = capitalize(pokemonDetails[i].name)
-        if(listName === active){
-          console.log(listName)
-          let currentModal = document.querySelector('.modal')
-          if(currentModal){
-            //removes the modal if there is one in the DOM
-            console.log('removing modal')
-            document.querySelector('.modal').remove()
-          }
-          let result = pokemonDetails[i];
-          return createModal(result)
-        }
-      }
+      }, 850)
     }
   }
+  previousValue = value;
+}
+
+function modal(search = null){
   function capitalize(str){
     String(str)
     let lower = str.toLowerCase();
     return str.charAt(0).toUpperCase() + lower.slice(1)
   }
-  // LIVE SEARCH
-  function findByName(){
-    // initialize timer, get the input value, filter through the Array
-    let timer
-    // GET WHAT IS BEING TYPED IN
-    let value = document.querySelector('#search').value
+  // THE SEARCH PARAMETER CONTAINS A STRING 
+  if(search != null){
+    // THE RESULT GETS WHAT IS RETURNED IN SEARCH-RESULT
+    let searchResult = document.querySelector('#search-result').innerText;
+    // STRIP WHITESPACE
+    searchResult = searchResult.trim();
     
-    let searchHook = document.querySelector('#search-result');
-    // COMPARE PREV VALUE TO TYPED VALUE
-    if(previousValue != value){
-      clearTimeout(timer)
-      // IF THE VALUE IS NOT EMPTY
-      if(value != ''){
-        // WILL SHOW UNTIL THE SEARCHHOOK'S INNERTEXT IS OVERRIDDEN
-        if(!isWaiting){
-          searchHook.innerText = 'loading..'
+    for(let i = 0; i < plist.length; i++){
+      let listName = plist[i].name
+      if(listName === searchResult){
+        // console.log(listName)
+        let modal = (function(){
+          let listName = capitalize(plist[i].name)
+          //IF THERE IS A MATCH WITH POKEMON THAT IS DISPLAYED AND WHAT IS IN THE ARRAY
+          
+          let currentModal = document.querySelector('.modal')
+          let modal = document.querySelector('.modal-content')
+          let title = document.querySelector('.modal-title');
+          let img = document.querySelector('.modal-body img');
+          let abilityList = document.querySelector('.ability-list')
+          let abilities = document.querySelectorAll('#abilities')
+          let type = document.querySelectorAll('#type')
+          let typeList = document.querySelector('.type-list')
+          let height = document.querySelector('#height')
+          let weight = document.querySelector('#weight')
+          
+          if(currentModal){
+            if(abilities){
+              abilities.forEach((el)=>{
+                el.remove()
+                return true;
+              })
+              type.forEach((el)=>{
+                el.remove()
+                return true
+              })
+            }
+          }
+          
+          let result = plist[i];
+          title.innerText = result.name;
+          img.setAttribute('src', `${result.imgUrl}`);
+          height.innerText = `Height: ${result.height}`;
+          weight.innerText = `Weight: ${result.weight}`;
+          modal.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`)
+          let buildAblitiesList = (function(){  
+            for(let i = 0; i < result.abilities.length; i++){
+              let li = `<li id="abilities" class="text-dark list-group-item">${result.abilities[i].ability.name}</li>`
+              abilityList.insertAdjacentHTML('afterbegin', li)
+            }
+            
+          })()
+          let buildTypesList = (function(){
+            for(let i = 0; i < result.types.length; i++){
+              let li = `<li id="type" class="text-dark list-group-item">${result.types[i].type.name}</li>`
+              typeList.insertAdjacentHTML('afterbegin', li)
+            }
+          })()
+        
+          
+        
+        })()
+      }
+    }
+  }else{
+    // CURRENT DISPLAYED POKEMON'S NAME
+    let activePokemon = document.querySelector('div.active div button').innerText;
+    activePokemon = capitalize(activePokemon)
+    let modal = (function(){
+      for(var i = 0; i < plist.length; i++){
+        let listName = capitalize(plist[i].name)
+        //IF THERE IS A MATCH WITH POKEMON THAT IS DISPLAYED AND WHAT IS IN THE ARRAY
+        if(listName === activePokemon){
+          let currentModal = document.querySelector('.modal')
+          let modal = document.querySelector('.modal-content')
+          let title = document.querySelector('.modal-title');
+          let img = document.querySelector('.modal-body img');
+          let abilityList = document.querySelector('.ability-list')
+          let abilities = document.querySelectorAll('#abilities')
+          let type = document.querySelectorAll('#type')
+          let typeList = document.querySelector('.type-list')
+          let height = document.querySelector('#height')
+          let weight = document.querySelector('#weight')
+          
+          if(currentModal){
+            if(abilities){
+              abilities.forEach((el)=>{
+                el.remove()
+                return true;
+              })
+              type.forEach((el)=>{
+                el.remove()
+                return true
+              })
+            }
+          }
+          
+          let result = plist[i];
+          title.innerText = result.name;
+          img.setAttribute('src', `${result.imgUrl}`);
+          height.innerText = `Height: ${result.height}`
+          weight.innerText = `Weight: ${result.weight}`
+          modal.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`)
+          let buildAblitiesList = (function(){  
+            for(let i = 0; i < result.abilities.length; i++){
+              let li = `<li id="abilities" class="text-dark list-group-item">${result.abilities[i].ability.name}</li>`
+              abilityList.insertAdjacentHTML('afterbegin', li)
+            }
+            
+          })()
+          let buildTypesList = (function(){
+            for(let i = 0; i < result.types.length; i++){
+              let li = `<li id="type" class="text-dark list-group-item">${result.types[i].type.name}</li>`
+              typeList.insertAdjacentHTML('afterbegin', li)
+            }
+          })()
+        }else{
+          console.log(listName + ' is not a match')
         }
         
-        // ALLOWS TIME TO TYPE BEFORE FILTERING THE ARRAY FOR THE NAME VALUE
-        timer = setTimeout(()=>{
-          let value = document.querySelector('#search').value.trim()
-          let searchResults = pokemonDetails.filter(pokemon=>{
-            if(pokemon.name === value){
-              console.log(pokemon)
-              return pokemon;
-              }
-            })
-          let searchHook = document.querySelector('#search-result');
-          
-          // CHECK FOR ANY RESULTS IN THE CALLBACK
-          if(searchResults.length != 0){
-            searchHook.innerText = searchResults[0].name
-            let result = `
-              <a data-toggle="modal" data-target="#exampleModal2" onclick="repository.getInfo('${value}')" id="search-result" class="nav-link active" href="#">
-                <div class="search-display">
-                  <img class="search-display__img" src="${searchResults[0].imgUrl}" />
-                </div>
-              </a>
-            `
-            return searchHook.insertAdjacentHTML('beforeend', result)  
-          }else{
-            console.log('error')
-            let searchHook = document.querySelector('#search-result');
-            searchHook.innerText = '';
-            let result = '<span>No results found. Please check your spelling.</span>'
-            searchHook.insertAdjacentHTML('beforeend', result)
-          }
-        },450)
       }
-      // SET PREV VALUE TO WHAT THE TYPED VALUE IS
-      previousValue = value;
-    }
-  }
-  // Modal functions 
-  function createModal(details){
-    let name = capitalize(details.name)
-    const modal = `<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModal2Label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title display-3 " id="exampleModal2Label">${name}</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <img class="w-100"  src="${details.imgUrl}" />
-                                    <h5 class="text-dark">Abilities</h5>
-                                    <ul class="list-group list-group-flush ability-list">
-                                      
-                                    </ul>
-                                    <hr>
-                                    <h5 class="text-dark">Types</h5>
-                                    <ul class="list-group list-group-flush type-list">
-                                      
-                                    </ul>
-                                </div>
-                                <div class="modal-footer">
-                                  <h5>Height:</h5>
-                                  <p class="text-primary">${details.height}</p>
-                                  <h5>Weight:</h5>
-                                  <p class="text-primary">${details.weight}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`
-    root.insertAdjacentHTML('beforeend', modal);
-    let modalContainer = document.querySelector('.modal-content')
-    buildAbilities(details.abilities)
-    buildTypes(details.types)
-    modalContainer.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${details.imgUrl});`)
-    // modalEvents()
-    // setTimeout(function(){
-    //   modalEvents()
-    //   }, 2000)
-  }
-  let buildAbilities = (array)=>{
-    let hook = document.querySelector('.ability-list')
-    let li = '<li class="text-dark list-group-item"></li>'
-    for(var i = 0; i < array.length; i++){
-      let li = `<li class="text-dark list-group-item">${array[i].ability.name}</li>`
-      hook.insertAdjacentHTML('afterbegin', li)
-    }
-  }
-  function buildTypes(array){
-    let hook = document.querySelector('.type-list')
-    let li = '<li class="text-dark list-group-item"></li>'
-    for(var i = 0; i < array.length; i++){
-      let li = `<li class="text-dark list-group-item">${array[i].type.name}</li>`
-      hook.insertAdjacentHTML('afterbegin', li)
-    }
-  }
-  
-  
-  return{
-    // buildCarousel : buildCarousel,
-    // getInfo : getInfo,
-    // findByName : findByName,
+    })()
+    //SEARCH THROUGH THE ARRAY LIST OF POKEMON
     
-    loadApi : loadApi
   }
-})();
-// repository.buildCarousel()
-repository.loadApi()
+}
