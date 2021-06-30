@@ -1,5 +1,5 @@
 // const fetch = require('node-fetch');
-let plist = [];
+let pokemonRepository = [];
 let index = 0;
 let previousValue = document.querySelector('#search').value;
 let isWaiting = false;
@@ -41,7 +41,7 @@ let isWaiting = false;
               throw new Error(`'keys need to match [${itemKeys}] <br>`);
             }
           });
-          return build(pokemon, plist).add(pokemon);
+          return build(pokemon, pokemonRepository).add(pokemon);
         case 'undefined':
           throw new Error('You need to pass an Object');
         default:
@@ -87,6 +87,7 @@ let build = (function (data, list){
   function add(pokemon){
     if(pokemon){
       fromList.push(pokemon);
+      return fromList;
     }
   }
   //add() is used in the switch statement on line 44
@@ -94,7 +95,7 @@ let build = (function (data, list){
     add:add
   };
 });
-// SEARCHES THROUGH PLIST ARRAY
+// SEARCHES THROUGH pokemonRepository ARRAY
 function searchFunction(){
   let timer;
   let value = (function(){return document.querySelector('input#search').value;})();
@@ -106,7 +107,7 @@ function searchFunction(){
         searchHook.innerText = 'loading..';
       }
       timer = setTimeout(()=>{
-        let results = plist.filter(pokemon=>{
+        let results = pokemonRepository.filter(pokemon=>{
           if(pokemon.name === value){
             return pokemon;
           }
@@ -131,132 +132,3 @@ function searchFunction(){
   previousValue = value;
 }
 searchFunction();
-// DISPLAYS INFORMATION BASED ON IF A VALUE IS PASSED INTO MODAL
-function modal(search = null){
-  // CAPITALIZE FUNCTION USED TO DISPLAY POKEMON NAME 
-  function capitalize(str){
-    String(str);
-    let lower = str.toLowerCase();
-    return str.charAt(0).toUpperCase() + lower.slice(1);
-  }
-  // IF THE SEARCH PARAMETER CONTAINS A STRING 
-  if(search != null){
-    // THE RESULT GETS WHAT IS RETURNED IN SEARCH-RESULT
-    let searchResult = document.querySelector('#search-result').innerText;
-    // STRIP WHITESPACE
-    searchResult = searchResult.trim();
-    for(let i = 0; i < plist.length; i++){
-      let listName = plist[i].name;
-      if(listName === searchResult){
-        (function(){
-          // let listName = capitalize(plist[i].name);
-          //IF THERE IS A MATCH WITH POKEMON THAT IS DISPLAYED AND WHAT IS IN THE ARRAY
-          
-          let currentModal = document.querySelector('.modal');
-          let modal = document.querySelector('.modal-content');
-          let title = document.querySelector('.modal-title');
-          let img = document.querySelector('.modal-body img');
-          let abilityList = document.querySelector('.ability-list');
-          let abilities = document.querySelectorAll('#abilities');
-          let type = document.querySelectorAll('#type');
-          let typeList = document.querySelector('.type-list');
-          let height = document.querySelector('#height');
-          let weight = document.querySelector('#weight');
-          
-          if(currentModal){
-            if(abilities){
-              abilities.forEach((el)=>{
-                el.remove();
-                return true;
-              });
-              type.forEach((el)=>{
-                el.remove();
-                return true;
-              });
-            }
-          }
-          
-          let result = plist[i];
-          title.innerText = result.name;
-          img.setAttribute('src', `${result.imgUrl}`);
-          height.innerText = `Height: ${result.height}`;
-          weight.innerText = `Weight: ${result.weight}`;
-          modal.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`);
-          (function(){  
-            for(let i = 0; i < result.abilities.length; i++){
-              let li = `<li id="abilities" class="text-dark list-group-item">${result.abilities[i].ability.name}</li>`;
-              abilityList.insertAdjacentHTML('afterbegin', li);
-            }
-          })();
-          (function(){
-            for(let i = 0; i < result.types.length; i++){
-              let li = `<li id="type" class="text-dark list-group-item">${result.types[i].type.name}</li>`;
-              typeList.insertAdjacentHTML('afterbegin', li);
-            }
-          })();
-        
-          
-        
-        })();
-      }
-    }
-  }else{
-    // activePokemon CONTAINS THE CURRENTLY DISPLAYED POKEMON'S NAME
-    let activePokemon = document.querySelector('div.active div button').innerText;
-    activePokemon = capitalize(activePokemon);
-    // IIFE BUILDS THE MODAL
-    (function(){
-      for(let i = 0; i < plist.length; i++){
-        let listName = capitalize(plist[i].name);
-        //IF THERE IS A MATCH WITH POKEMON THAT IS DISPLAYED AND WHAT IS IN THE ARRAY
-        if(listName === activePokemon){
-          let currentModal = document.querySelector('.modal');
-          let modal = document.querySelector('.modal-content');
-          let title = document.querySelector('.modal-title');
-          let img = document.querySelector('.modal-body img');
-          let abilityList = document.querySelector('.ability-list');
-          let abilities = document.querySelectorAll('#abilities');
-          let type = document.querySelectorAll('#type');
-          let typeList = document.querySelector('.type-list');
-          let height = document.querySelector('#height');
-          let weight = document.querySelector('#weight');
-          
-          if(currentModal){
-            if(abilities){
-              abilities.forEach((el)=>{
-                el.remove();
-                return true;
-              });
-              type.forEach((el)=>{
-                el.remove();
-                return true;
-              });
-            }
-          }
-          
-          let result = plist[i];
-          title.innerText = result.name;
-          img.setAttribute('src', `${result.imgUrl}`);
-          height.innerText = `Height: ${result.height}`;
-          weight.innerText = `Weight: ${result.weight}`;
-          modal.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`);
-          (function(){
-            for(let i = 0; i < result.abilities.length; i++){
-              let li = `<li id="abilities" class="text-dark list-group-item">${result.abilities[i].ability.name}</li>`;
-              abilityList.insertAdjacentHTML('afterbegin', li);
-            }
-          })();
-          (function(){
-            for(let i = 0; i < result.types.length; i++){
-              let li = `<li id="type" class="text-dark list-group-item">${result.types[i].type.name}</li>`;
-              typeList.insertAdjacentHTML('afterbegin', li);
-            }
-          })();
-        }
-        
-      }
-    })();
-    //SEARCH THROUGH THE ARRAY LIST OF POKEMON
-    
-  }
-}
