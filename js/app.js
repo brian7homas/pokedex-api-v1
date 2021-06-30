@@ -34,9 +34,6 @@ let isWaiting = false;
       let testKeys = Object.keys(ObjectTest[0]);
       let pokemonObject = typeof(pokemon);
       switch(pokemonObject){
-        case 'array':
-          console.log('This is an array');
-          break;
         case 'object':
           testKeys.forEach((key, i) => {
             if(key != itemKeys[i]){
@@ -45,20 +42,10 @@ let isWaiting = false;
             }
           });
           return build(pokemon, plist).add(pokemon);
-        case 'string':
-            console.log('This is an string');
-            break;
-        case 'number':
-          console.log('This is an number');
-          break;
-        case 'boolean':
-          console.log('This is an bool');
-          break;
         case 'undefined':
-            console.log('You need to pass something');
-            break;
+          throw new Error('You need to pass an Object');
         default:
-          console.log('this is a ' + pokemonObject);
+          throw new Error('The parameter needs to be an Object');
       }
     });
   });
@@ -69,7 +56,7 @@ let build = (function (data, list){
   let fromFetch = data;
   // takes data directly from fetch
   // to build carousel items
-  let carousel = (function (fromFetch){
+  (function (fromFetch){
     let itemHook = document.querySelector('.carousel-inner');
     // let name = (function(){return `The pokemon's name is ${fromFetch.name}`})()
     let name = fromFetch.name;
@@ -90,7 +77,7 @@ let build = (function (data, list){
   
   // takes data directly from fetch
   // to build carousel items  
-  let indicators = (function (fromFetch){
+  (function (fromFetch){
     let itemHook =  document.querySelector('.carousel-indicators');
     let indicator = `<li data-target="#carouselExampleIndicators" data-slide-to="${index++}" class="carousel-indicator"><img class="indicator-img w-100" src="${fromFetch.png}" alt="${fromFetch.name}"/></li>`;
     itemHook.insertAdjacentHTML('beforeend', indicator);
@@ -142,6 +129,7 @@ function searchFunction(){
   }
   previousValue = value;
 }
+searchFunction();
 // DISPLAYS INFORMATION BASED ON IF A VALUE IS PASSED INTO MODAL
 function modal(search = null){
   // CAPITALIZE FUNCTION USED TO DISPLAY POKEMON NAME 
