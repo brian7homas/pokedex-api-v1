@@ -1,9 +1,9 @@
 // const fetch = require('node-fetch');
-// import validate from './modules/validate.js';
 let plist = [];
 let index = 0;
 let previousValue = document.querySelector('#search').value;
 let isWaiting = false;
+// GETS POKEMON
 let pokemonRepository = (function(){
   const URL = 'https://pokeapi.co/api/v2/pokemon/';
   fetch(URL).then(function(res){
@@ -63,7 +63,7 @@ let pokemonRepository = (function(){
     })
   })
 })();
-
+// BUILDS CAROUSEL/INDICATORS/MODAL
 let build = (function (data, list){
   let fromList = list;
   let fromFetch = data;
@@ -106,7 +106,7 @@ let build = (function (data, list){
     add:add
   }
 });
-
+// SEARCHES THROUGH PLIST ARRAY
 function searchFunction(){
   let timer;
   let value = (function(){return document.querySelector('input#search').value;})()
@@ -142,14 +142,15 @@ function searchFunction(){
   }
   previousValue = value;
 }
-
+// DISPLAYS INFORMATION BASED ON 
 function modal(search = null){
+  // CAPITALIZE FUNCTION USED TO DISPLAY POKEMON NAME 
   function capitalize(str){
     String(str)
     let lower = str.toLowerCase();
     return str.charAt(0).toUpperCase() + lower.slice(1)
   }
-  // THE SEARCH PARAMETER CONTAINS A STRING 
+  // IF THE SEARCH PARAMETER CONTAINS A STRING 
   if(search != null){
     // THE RESULT GETS WHAT IS RETURNED IN SEARCH-RESULT
     let searchResult = document.querySelector('#search-result').innerText;
