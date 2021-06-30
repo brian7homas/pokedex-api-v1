@@ -89,6 +89,7 @@ let build = (function (data, list){
       fromList.push(pokemon);
     }
   }
+  //add() is used in the switch statement on line 44
   return{
     add:add
   };
@@ -148,7 +149,7 @@ function modal(search = null){
       let listName = plist[i].name;
       if(listName === searchResult){
         (function(){
-          let listName = capitalize(plist[i].name);
+          // let listName = capitalize(plist[i].name);
           //IF THERE IS A MATCH WITH POKEMON THAT IS DISPLAYED AND WHAT IS IN THE ARRAY
           
           let currentModal = document.querySelector('.modal');
@@ -181,14 +182,13 @@ function modal(search = null){
           height.innerText = `Height: ${result.height}`;
           weight.innerText = `Weight: ${result.weight}`;
           modal.setAttribute('style', `background-image: linear-gradient(to left bottom, hsla(6, 83%, 43%, 1), hsla(0, 0%, 91%, .6)), url(${result.imgUrl});`);
-          let buildAblitiesList = (function(){  
+          (function(){  
             for(let i = 0; i < result.abilities.length; i++){
               let li = `<li id="abilities" class="text-dark list-group-item">${result.abilities[i].ability.name}</li>`;
               abilityList.insertAdjacentHTML('afterbegin', li);
             }
-            
           })();
-          let buildTypesList = (function(){
+          (function(){
             for(let i = 0; i < result.types.length; i++){
               let li = `<li id="type" class="text-dark list-group-item">${result.types[i].type.name}</li>`;
               typeList.insertAdjacentHTML('afterbegin', li);
